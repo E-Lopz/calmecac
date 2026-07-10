@@ -1,0 +1,11 @@
+logs/
+
+.env
+*.env
+secrets.yaml
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/

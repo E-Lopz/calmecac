@@ -1,0 +1,9 @@
+# Ollama connection and default model settings for the harness.
+base_url: http://localhost:11434
+model: qwen2.5-coder:14b
+temperature: 0.1
+num_ctx: 32768
+
+# Ceiling on agent loop steps. Not consumed yet (no loop exists),
+# but the value lives here so the loop can just read it later.
+max_steps: 10
