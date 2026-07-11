@@ -18,6 +18,21 @@ def _log(log_path, event):
         f.write(json.dumps(event) + "\n")
 
 
+def _abort_stats(tool_records):
+    """Classify an aborted run from its executed tool calls: distinct successful
+    calls, repeated ones, and errors — "progressing" if it was clean linear
+    progress, "possibly-stuck" otherwise."""
+    successful = [
+        (r["name"], json.dumps(r["arguments"], sort_keys=True))
+        for r in tool_records if not r["error"]
+    ]
+    errors = sum(1 for r in tool_records if r["error"])
+    distinct = len(set(successful))
+    repeats = len(successful) - distinct
+    verdict = "progressing" if repeats == 0 and errors == 0 else "possibly-stuck"
+    return len(successful), distinct, repeats, errors, verdict
+
+
 def _call_tool(name, arguments):
     """Run a tool call. Returns (result, error) — exactly one is None."""
     if name not in REGISTRY:
@@ -47,6 +62,7 @@ def run_task(task: str, config) -> str:
     log_path = LOG_DIR / f"run_{timestamp}.jsonl"
 
     max_steps = config.get("max_steps", 10)
+    tool_records = []
 
     for step in range(1, max_steps + 1):
         prompt_snapshot = list(messages)
@@ -71,9 +87,17 @@ def run_task(task: str, config) -> str:
         if content:
             print(f"[step {step}] assistant: {content}")
 
-        for call in tool_calls:
+        call_keys = [
+            (c["function"]["name"], json.dumps(c["function"]["arguments"], sort_keys=True))
+            for c in tool_calls
+        ]
+
+        for call, key in zip(tool_calls, call_keys):
             name = call["function"]["name"]
             arguments = call["function"]["arguments"]
+            is_duplicate = call_keys.count(key) > 1
+            if is_duplicate:
+                print(f"[step {step}] warning: duplicate tool call {name}({arguments})")
             print(f"[step {step}] tool_call: {name}({arguments})")
 
             result, error = _call_tool(name, arguments)
@@ -81,16 +105,34 @@ def run_task(task: str, config) -> str:
             print(f"[step {step}] tool_result: {tool_content}")
 
             messages.append({"role": "tool", "name": name, "content": tool_content})
-            _log(log_path, {
+            tool_records.append({"name": name, "arguments": arguments, "error": error is not None})
+
+            log_entry = {
                 "step": step,
                 "type": "tool_call",
                 "name": name,
                 "arguments": arguments,
                 "result": tool_content,
                 "error": error is not None,
-            })
+            }
+            if is_duplicate:
+                log_entry["duplicate_call"] = True
+            _log(log_path, log_entry)
 
-    abort_message = f"aborted: exceeded max_steps ({max_steps}) without a final answer"
+    successful, distinct, repeats, errors, verdict = _abort_stats(tool_records)
+    abort_message = (
+        f"aborted: exceeded max_steps ({max_steps}) without a final answer — "
+        f"{distinct} distinct successful calls, {repeats} repeats, {errors} errors — {verdict}"
+    )
     print(f"[step {max_steps}] {abort_message}")
-    _log(log_path, {"step": max_steps, "type": "abort", "message": abort_message})
+    _log(log_path, {
+        "step": max_steps,
+        "type": "abort",
+        "message": abort_message,
+        "successful_calls": successful,
+        "distinct_calls": distinct,
+        "repeats": repeats,
+        "error_calls": errors,
+        "verdict": verdict,
+    })
     return abort_message

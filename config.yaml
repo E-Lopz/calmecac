@@ -2,7 +2,16 @@
 base_url: http://localhost:11434
 model: qwen3:14b
 temperature: 0.1
-num_ctx: 32768
+# Experiment: at 32768, `ollama ps` showed a 23%/77% CPU/GPU split on this hardware
+# (not fully GPU-resident). Lowering to 16384 to see if it regains full GPU residency.
+num_ctx: 16384
+# qwen3's thinking-mode overhead measured at 113.8s wall time for one tool call
+# (NOTES.md finding 2a) — the old hardcoded 120s timeout was too tight for that and
+# produced a bare httpx.ReadTimeout with no log trace. 300s gives headroom.
+timeout: 300
+# Disable qwen3's separate `thinking` field — it's the source of the 113.8s latency
+# above; keep responses fast and deterministic for now.
+think: false
 
 # Ceiling on agent loop steps (harness/loop.py).
 max_steps: 10

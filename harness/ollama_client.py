@@ -17,6 +17,7 @@ def chat(messages, tools=None):
         "model": _config["model"],
         "messages": messages,
         "stream": False,
+        "think": _config["think"],
         "options": {
             "temperature": _config["temperature"],
             "num_ctx": _config["num_ctx"],
@@ -28,7 +29,7 @@ def chat(messages, tools=None):
     response = httpx.post(
         f"{_config['base_url']}/api/chat",
         json=payload,
-        timeout=120,
+        timeout=_config["timeout"],
     )
     response.raise_for_status()
     return response.json()
