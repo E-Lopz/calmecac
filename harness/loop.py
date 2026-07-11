@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from harness.ollama_client import chat
-from harness.tools import REGISTRY
+from harness.tools import REGISTRY, SKILL_NAMES
 
 PROMPT_PATH = Path(__file__).resolve().parent.parent / "agents" / "kukulkan" / "prompt.md"
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
@@ -52,6 +52,7 @@ def _call_tool(name, arguments):
 
 def run_task(task: str, config) -> str:
     system_prompt = PROMPT_PATH.read_text()
+
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": task},
@@ -117,6 +118,8 @@ def run_task(task: str, config) -> str:
             }
             if is_duplicate:
                 log_entry["duplicate_call"] = True
+            if name in SKILL_NAMES:
+                log_entry["skill_loaded"] = name
             _log(log_path, log_entry)
 
     successful, distinct, repeats, errors, verdict = _abort_stats(tool_records)

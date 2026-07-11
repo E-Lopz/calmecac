@@ -199,23 +199,153 @@ step 3  final answer: "CODE: QUETZAL-7734"
 
 ---
 
+## 6. Empty-response flake: skill names silently mistaken for tool names
+
+Discovered while measuring `load_skill` trigger rate (`scripts/trigger_test.py`) for the two
+hand-written skills from Phase 3 (`write-and-verify-code`, `estimate-before-batch`). Five
+identical runs of the A′ task — "Write a Python file containing tricky quotes: nested double and
+single quotes, an apostrophe in prose, and a triple-quoted string" — against the real harness
+(skills index in the system prompt, `think: false`, the four registered tools including
+`load_skill`) all came back the same way: `content: ""`, no `tool_calls`, step 1, no data on
+whether the skill would have triggered at all.
+
+**Reproduced outside the harness** (`scripts/probe_flake.py`, direct `/api/chat` calls with the
+exact same system prompt, tools list, and options the harness sends): 10/10 across two passes at
+`temperature: 0.1`. Every flake shows real generation happened — `eval_count` 100–184,
+`done_reason: "stop"` — but nothing surfaces anywhere: not `content`, not `thinking` (`think:
+false`), not `tool_calls`. Silent, not a crash, not a timeout.
+
+**Narrowing the variable** (3-cell grid: index+tools+think=false / index+tools+think=true /
+no-index+tools+think=false): the no-index cell (the exact Phase 2.5 acceptance shape) was clean
+2/2, ruling out "tools + think=false is broken in general." The index+think=true cell was only
+1/2 clean, ruling out "thinking-suppression is the sole cause." The one constant across every
+broken cell was the skills index text itself.
+
+**Seeing the raw generation** (`scripts/raw_probe.py`, hand-rendered ChatML template against
+`/api/generate` with `raw: true`, bypassing Ollama's chat templating and tool-call parsing
+entirely — note this still splits `<think>` content into a separate field even in raw mode, a
+finding in itself): with the model forced past an empty `<think></think>` block, it emitted a
+well-formed `<tool_call>` naming **`write-and-verify-code`** — a skill name, not a tool name —
+with `write_file`-shaped arguments (`path`, `content`).
+
+**Direct confirmation via `/api/chat`:** a "clincher" probe asking the model to call a wholly
+invented tool name (`frobnicate_file`, no skills index present) got an honest, correct decline in
+plain text (`content`: "The tool `frobnicate_file` is not available.", `eval_count: 14`) — so
+Ollama does *not* silently drop just any unknown-name call. But asking it to call
+`write-and-verify-code` directly (skills index present, real tools list) reproduced the exact
+flake signature: `content: ""`, `tool_calls: 0`, `done_reason: "stop"`, `eval_count: 24`. The
+trigger isn't "unknown name" in general — it's a name that's real, present in the prompt three
+lines above the tool list, and not registered as a tool.
+
+**Attempted prompt fix, didn't hold:** rewrote the skill index (`harness/loop.py`) to state
+explicitly "these are NOT tools" and give a worked `load_skill(name="write-and-verify-code")`
+example. Reran A′ 5x: still 5/5 flake, same signature (`eval_count` 110–129). The rewrite closed
+the narrow direct-collision case above but didn't change the model's behavior on the real task.
+
+**Settling malformed-JSON vs. wrong-name** (`scripts/ablation_probe.py`, content-dependence
+ablation): a trivial write (`hello.txt`) and a one-escaped-quote write (`greeting.txt`) both
+passed 3/3 with valid `write_file` calls; the full A′ task flaked 3/3. Consistent with either
+"malformed JSON under quote load" or "wrong tool name" — ambiguous on its own. Resolved by
+recapturing the actual A′ generation with the revised (already-"NOT tools") system prompt: all 3
+raw captures produced a well-formed `<tool_call>`, **valid JSON every time** (`json.loads`
+succeeded, no parse errors to report), naming `write-and-verify-code` instead of `write_file` in
+all three. The escaping was correct; the tool name was wrong.
+
+**Taxonomy — two separate findings:**
+- **Prompt/skill-design.** The model treats skill names as directly callable once they're listed
+  near the real tools, and this confusion survives an explicit "these are NOT tools, call
+  `load_skill(name=...)`" rewrite of the index — the disambiguation didn't take. Whatever fixes
+  this (rewording again, restructuring the index, a stronger example, moving skill names further
+  from the tool-call vocabulary) is a prompt-design question, not resolved by this investigation.
+- **Harness/upstream, and the more urgent one.** Ollama 0.31.2's `/api/chat` silently drops a
+  well-formed `tool_call` whose name isn't in the request's `tools` list — no error, no
+  degraded-content fallback, just an empty message with real tokens spent generating it
+  (confirmed directly via the `frobnicate_file` clincher). This defeats the harness's
+  feed-the-error-back design (`_call_tool`'s unknown-tool-name branch, finding 2b) by construction
+  — that branch only runs if a `tool_calls` entry reaches the harness at all, and here nothing
+  does. From the harness's point of view this is indistinguishable from the model silently giving
+  up. Whether the fix belongs in the harness (detect zero-tool_calls + zero-content + nonzero
+  eval_count as a distinct "swallowed call" case, distinct from finding 4's abort classifier) or
+  is worth an upstream Ollama report is an open question — not resolved here, per this session's
+  diagnosis-only scope.
+
+All probe scripts (`scripts/probe_flake.py`, `scripts/raw_probe.py`, `scripts/ablation_probe.py`,
+`scripts/trigger_test.py`) are scratch/diagnostic, not part of the harness proper.
+
+---
+
+## 7. Skills-as-tools redesign (Phase 3.5): finding 6b fixed, a residual flake surfaces
+
+Following finding 6's diagnosis (skills listed as a text index alongside real tools caused the
+model to call skill names directly, which Ollama's `/api/chat` then silently dropped), Phase 3.5
+redesigned skills to be tools: `harness/tools.py` now scans `skills/` at import time and registers
+each skill's frontmatter `name`/`description` directly into `REGISTRY`, with a no-argument
+callable that returns the SKILL.md body. `load_skill`, `_resolve_skill`, and `list_skills` are
+gone; so is the "Available skills" text block `loop.py` used to append to the system prompt —
+skills are now indistinguishable from `read_file`/`write_file`/`list_dir` as far as the model's
+`tools` list is concerned. Tool-call logging still tags skill executions with `"skill_loaded":
+<name>`, now keyed off `tools.SKILL_NAMES` (a frozenset of registered skill names) rather than a
+`load_skill` argument.
+
+**Acceptance, A′ ×5** (the same tricky-quotes task that flaked 15/15 across finding 6's probes):
+0/5 completed cleanly, but run 2 is the direct confirmation the targeted mechanism is fixed —
+`write-and-verify-code({'path': ..., 'content': ...})` was called (the model still reached for the
+skill by name, using `write_file`'s argument shape instead of no arguments), and this time it
+**surfaced**: executed, hit a real `TypeError` (`_make_skill_func.<locals>.run() got an unexpected
+keyword argument 'path'`), and got fed back through the normal `_call_tool` error path — logged
+with `skill_loaded: "write-and-verify-code"` and `error: true`. Under finding 6's Ollama-side
+silent-drop mechanism, that exact call would have vanished with zero trace. It didn't.
+
+**But a residual flake persists, unrelated to skill naming.** The other 4/5 A′ runs were bare
+`step 1: empty content, no tool_calls` — no call attempted at all, no skill name, nothing to drop.
+This same signature was seen once before skills existed (Phase 3 testing, same task) — it's not
+new, and it's not what Phase 3.5 targeted. `T1` (trivial write_file task) stayed clean 3/3, and the
+weather question stayed an honest decline 1/1, so this residual flake looks specific to task
+complexity/content again (echoing finding 6's `ablation_probe.py` result), not a general
+regression.
+
+**Taxonomy:**
+- **6b considered fixed.** Registering skills as real tools means there's no longer a plausible,
+  well-formed call to a name absent from `tools` — the specific silent-drop path Ollama 0.31.2
+  exhibited is structurally closed off by this design, not papered over. Confirmed by direct
+  observation (run 2), not just inference.
+- **6a superseded, not fixed.** The prompt-side confusion (model treats skill names as callable)
+  wasn't fixed by the earlier prompt rewrite and is arguably still present in spirit — the model in
+  run 2 called the skill with `write_file`'s arguments rather than no arguments, suggesting it
+  still doesn't fully understand what a skill-as-tool call is supposed to *do*. It stopped mattering
+  operationally because the redesign makes any such call harness-visible instead of invisible, but
+  the underlying model confusion about skill semantics is unresolved.
+- **New, open: residual empty-response flake, mechanism unknown.** 4/5 A′ runs produced zero tool
+  calls and empty content on step 1 — no plausible parser-side cause (no call was attempted at
+  all), so this isn't finding 6's mechanism. Content-dependent (T1 clean, A′ flaky), consistent
+  with finding 6's `ablation_probe.py` result, but not yet isolated the way finding 6 was.
+  Undiagnosed as of this writing — explicitly out of scope for Phase 3.5 per instructions (no
+  skill-body or prompt tuning this session).
+
+---
+
 ## Summary — taxonomy tally
 
 | # | Experiment | Finding | Taxonomy |
 |---|---|---|---|
 | 1 | Missing tool | Answered honestly, no hallucination | none (already correct) |
-| 2a | Malformed output | Hardcoded 120s timeout too tight for qwen3 thinking-mode latency on this hardware; failures look like generic network errors (no streaming) | **harness** |
+| 2a | Malformed output | Hardcoded 120s timeout too tight for qwen3 thinking-mode latency on this hardware; failures look like generic network errors (no streaming) | **harness** (fixed Phase 2.5) |
 | 2b | Malformed output | Dropped required arg correctly caught and fed back by `_call_tool` | none (working as designed) |
-| 2c | Malformed output | Recovered arg was syntactically invalid Python (unescaped apostrophe); nothing downstream checks | **prompt** |
+| 2c | Malformed output | Recovered arg was syntactically invalid Python (unescaped apostrophe); nothing downstream checks | **prompt** (addressed Phase 2.5) |
 | 3 | Path escape | All traversal + symlink probes blocked | none (guard is solid) |
-| 4 | Budget exhaustion | Clean linear progress (10/15 files), abort message carries no progress/stuck signal | **harness** (concrete requirement for future advisor) |
+| 4 | Budget exhaustion | Clean linear progress (10/15 files), abort message carries no progress/stuck signal | **harness** (addressed Phase 2.5) |
 | 5a | Long context | Needle retrieval + strict format both held at ~6.3k tokens | none (no degradation at this size — floor, not ceiling) |
 | 5b | Long context | Model emitted a genuine duplicate tool call in one turn | **harness**, latent (matters once non-idempotent tools exist) |
+| 6a | Empty-response flake | Model calls skill names as if they were tools; explicit "NOT tools" prompt rewrite didn't fix it | **prompt** (superseded by 7, not fixed) |
+| 6b | Empty-response flake | Ollama 0.31.2 silently drops well-formed tool_calls naming an unregistered tool — no error ever reaches the harness | **harness/upstream** (**fixed Phase 3.5**, see 7) |
+| 7 | Skills-as-tools redesign | Skill-as-tool calls now surface and error cleanly instead of vanishing; a separate, content-dependent empty-response flake remains on the same task | **harness** (6b fixed) + **open** (residual flake, undiagnosed) |
 
-Biggest actionable item: the **120s timeout** (2a) is the one thing that will bite reliably on
-any future session doing real tool-calling work with this model, and it fits CLAUDE.md's "ask
-before adding config" bar — worth raising with the user directly rather than just leaving it in
-notes.
+Biggest actionable item: **2a and 6b are both fixed** (Phase 2.5 and Phase 3.5 respectively). The
+current standout is **7's residual flake** — 4/5 runs of the A′ task still produce a bare empty
+response with zero tool calls attempted, a mechanism distinct from and not explained by finding 6.
+`ablation_probe.py`-style content-dependence testing (finding 6's Task 1) is the natural next step
+to isolate it, the same way finding 6 itself was isolated — but that's deliberately not done here
+per this session's scope.
 
 
 ## 3. Path-escape probes
