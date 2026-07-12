@@ -15,3 +15,10 @@ think: false
 
 # Ceiling on agent loop steps (harness/loop.py).
 max_steps: 10
+
+# Discord gateway (harness/discord_gateway.py). Off by default — flip enabled
+# to true and set channel_id once DISCORD_BOT_TOKEN and DISCORD_ALLOWED_USER_ID
+# are set (see README.md).
+discord:
+  enabled: false
+  channel_id: null

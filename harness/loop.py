@@ -73,7 +73,7 @@ def _call_tool(name, arguments):
     return str(result), None
 
 
-def run_task(task: str, config) -> str:
+def run_task(task: str, config, source="cli") -> str:
     max_steps = config.get("max_steps", 10)
     system_prompt = PROMPT_PATH.read_text() + f"\n\nYou have a budget of {max_steps} steps for this task."
 
@@ -90,6 +90,7 @@ def run_task(task: str, config) -> str:
         "type": "run_start",
         "messages": messages,
         "tool_names": list(REGISTRY),
+        "source": source,
     })
 
     tool_records = []
