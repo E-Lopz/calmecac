@@ -51,7 +51,8 @@ def _call_tool(name, arguments):
 
 
 def run_task(task: str, config) -> str:
-    system_prompt = PROMPT_PATH.read_text()
+    max_steps = config.get("max_steps", 10)
+    system_prompt = PROMPT_PATH.read_text() + f"\n\nYou have a budget of {max_steps} steps for this task."
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -68,7 +69,6 @@ def run_task(task: str, config) -> str:
         "tool_names": list(REGISTRY),
     })
 
-    max_steps = config.get("max_steps", 10)
     tool_records = []
 
     for step in range(1, max_steps + 1):

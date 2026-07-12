@@ -434,6 +434,73 @@ and the skill-tool plumbing all behaved exactly as designed; the model simply ne
 per this phase's instructions): communicate `max_steps` to the model somewhere in-context so
 `estimate-before-batch`'s budget comparison is meaningful, and/or strengthen the skill's step 2
 wording so "I will proceed" is never accepted as a substitute for an actual next tool call.
+**Follow-up below (finding 10): the budget-communication candidate fix was tried and the
+"I will proceed" pattern is gone — see there before assuming both fixes are still needed.**
+
+---
+
+## 10. Finding 9 follow-up: budget injection alone fixes the follow-through failure
+
+Finding 9 named two independent candidate fixes: (a) tell the model what `max_steps` is
+(a harness change — the skill's own step 2 asks it to "compare against your step budget," but
+the budget was never in context anywhere), and (b) a task-independent prompt line forcing a tool
+call or explicit decline after consulting any skill (a prompt change, to stop "I will proceed"
+from being accepted as if it were an action). Ran them as separate arms deliberately, budget
+injection alone first — if the model can do the comparison, it may decline or batch correctly
+with no follow-through pressure needed, which would mean the prompt line isn't needed at all.
+
+**Arm 1 change (harness, `harness/loop.py`, one line):** `run_task` now reads `max_steps` before
+building the system prompt and appends `f"\n\nYou have a budget of {max_steps} steps for this
+task."` to it. `agents/kukulkan/prompt.md` and the skill files are untouched — this is pure
+harness-transparency, nothing new is asked of the model.
+
+**Result — full suite, `--n 5`, arm 1 only:** `hello-baseline`, `tricky-quotes`,
+`weather-decline`, `swallow-canary` all unchanged (100%/100%/100%/no new swallows) — no
+regression from the added system-prompt text. `batch-15-files` is still 0/5 against its current
+checks (`final_answer_regex: progressing`, `tool_called: write_file`), but the *shape* of the
+failure changed completely, and consistently, across all 5 runs. Transcript, run 1
+(`logs/run_20260712T005727Z.jsonl`):
+
+```
+step 1  model_call: content='', tool_calls=[{function: {name: 'estimate-before-batch', arguments: {}}}]
+step 1  tool_call: estimate-before-batch({}) -> ok
+step 2  model_call: content="This task needs approximately 17 steps (15 writes + list_dir +
+                     answer) but the budget is 10. Options: raise the budget, or I complete the
+                     first 8 and report." tool_calls=None
+```
+
+All 5 runs produced this same message near-verbatim (`logs/run_20260712T005731Z.jsonl`,
+`...005734Z`, `...005738Z`, `...005741Z`). Compare against `estimate-before-batch/SKILL.md`'s own
+worked example: *"RIGHT: 'This needs ~17 steps (15 writes + list_dir + answer) but the budget is
+10. Should I proceed with the first 8 and report, or should the budget be raised?'"* — the model
+is now reproducing the skill's own prescribed response almost word for word, with correct
+arithmetic (17 vs. the actual budget of 10, not a guess), instead of finding 9's "the budget is
+not specified... I will proceed... let's start" non sequitur.
+
+**Interpretation.** Finding 9's "I will proceed" pattern — declaring intent to act and then
+answering instead of acting — is gone in all 5 runs, replaced by an honest, immediate,
+correctly-reasoned decline that follows `estimate-before-batch` step 2 to the letter. That
+satisfies the decision rule set going in: the model declines properly with no follow-through
+pressure applied, so finding 9 was a harness-transparency bug, not a follow-through gap — **arm 2
+(the "next step must be a tool call or explicit decline" prompt line) is not needed for this
+failure mode** and was not added, preserving that prompt real estate. Arm 1 is committed as a
+standing harness change on this evidence.
+
+**Open, not closed by this experiment: the eval case itself.** `batch-15-files`'s checks
+(`final_answer_regex: progressing`, `tool_called: write_file`) were written for finding 4's
+shape (partial linear progress, then an abort) and finding 9's shape (zero progress, no abort,
+no decline). Neither anticipated arm 1's new outcome — an explicit, correct, budget-aware decline
+with no `write_file` calls and no abort. Under the *current* checks this still reads as 0/5
+"failure," which is no longer an accurate description of what's happening. Whether to update the
+case to recognize "explicit decline" as a passing outcome, keep it strictly scoped to the
+original budget-exhaustion shape, or split it into two cases is a real design decision, not
+resolved here — flagged rather than silently patched, since loosening a check to force green
+without deciding what "correct" means here would hide the judgment call rather than make it.
+
+**Taxonomy: harness (fixed, this phase) — the transparency gap named in finding 9 is closed and
+validated by direct before/after transcript comparison.** The residual "8c"-style gap (does the
+model's decline actually happen, not just get planned) turned out not to exist once the budget
+was visible; no prompt change was needed to get there.
 
 ---
 
@@ -455,15 +522,15 @@ wording so "I will proceed" is never accepted as a substitute for an actual next
 | 8a | Skill-tool leniency | Argument leniency (Phase 3.6) let the model treat "got a response back" as "action happened" — 0/5 real writes | **harness** (**fixed Phase 3.7**, notice prefix) |
 | 8b | Skill-tool leniency | New diagnostic logging (`generation_swallowed`, `run_start`, eval/done fields) caught 8a immediately on first use | none (working as designed) |
 | 8c | Skill-tool leniency | Model follows a skill's escaping guidance but skips its explicit verification step every time | **prompt/skill-design** (open) |
-| 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **prompt/skill-design** (open) |
+| 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **prompt/skill-design** (superseded by 10, root cause was harness transparency) |
+| 10 | Finding 9 follow-up (budget injection, arm 1) | One-line harness fix (inject `max_steps` into the system prompt) turns "I will proceed" into an honest, correctly-reasoned decline matching the skill's own worked example; no prompt change needed | **harness** (**fixed this phase**) |
 
-Biggest actionable item: **2a, 6b, and 8a are all fixed** (Phases 2.5, 3.5, and 3.7
+Biggest actionable item: **2a, 6b, 8a, and 10 are all fixed** (Phases 2.5, 3.5, 3.7, and Phase 4
 respectively). The current standout is **7's residual flake** — still recurring at roughly 1-in-5
 on the A′ task, still a bare empty response with zero tool calls attempted, still unexplained,
 and now the best-instrumented open item in this log (`generation_swallowed` + `eval_count` fire
-reliably whenever it happens). Runner-up: **8c** and the newly found **9** — both real gaps in how
-closely a skill's own procedure gets followed once it's been read, not in the harness mechanics
-around it.
+reliably whenever it happens). Runner-up: **8c**, a smaller but real gap — skills that specify a
+procedure don't get that procedure fully followed even when they're being read.
 
 ---
 
