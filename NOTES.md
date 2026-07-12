@@ -572,21 +572,21 @@ a second data point was needed to catch.
 | 8a | Skill-tool leniency | Argument leniency (Phase 3.6) let the model treat "got a response back" as "action happened" — 0/5 real writes | **harness** (**fixed Phase 3.7**, notice prefix) |
 | 8b | Skill-tool leniency | New diagnostic logging (`generation_swallowed`, `run_start`, eval/done fields) caught 8a immediately on first use | none (working as designed) |
 | 8c | Skill-tool leniency | Model follows a skill's escaping guidance but skips its explicit verification step every time | **prompt/skill-design** (open) |
-| 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **prompt/skill-design** (harness-transparency arm fixed by 10, but 11 shows the underlying "declare intent, don't act" bug is still open) |
-| 10 | Finding 9 follow-up (budget injection, arm 1) | One-line harness fix (inject `max_steps` into the system prompt) turns "I will proceed" into an honest, correctly-reasoned decline matching the skill's own worked example, on the tight-budget case | **harness** (**fixed this phase** — real, no regressions — but see 11: doesn't close 9 in general) |
-| 11 | Finding 10 follow-up (sufficient budget, same task) | Same task with `max_steps: 20` (headroom to actually finish) still goes 0/5 on every `file_written` check — `completed` passes but zero files get written; "I will proceed" persists even when proceeding is correct, falsifying 10's "no prompt change needed" conclusion | **prompt/skill-design** (open again — arm 2, the follow-through line in `agents/kukulkan/prompt.md`, is back on the table, not yet applied) |
+| 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **harness** (**closed** — see 11) |
+| 10 | Finding 9 follow-up (budget injection, arm 1) | One-line harness fix (inject `max_steps` into the system prompt) turns "I will proceed" into an honest, correctly-reasoned decline matching the skill's own worked example, on the tight-budget case | **harness** (**fixed Phase 4** — real, no regressions; the decline-branch half of 9's fix, subsumed into 9's full closure by 11) |
+| 11 | Finding 10 follow-up (sufficient budget, same task) | Same task with `max_steps: 20` (headroom to actually finish) still goes 0/5 on every `file_written` check — `completed` passes but zero files get written; "I will proceed" persists even when proceeding is correct, falsifying 10's "no prompt change needed" conclusion | **harness** (**closed Phase 4**) — arm 2 (a task-independent follow-through line added to `agents/kukulkan/prompt.md`) was tried first and produced a null result: byte-identical behavior and step counts on every case, run twice. A harness-level intent-nudge followed instead — `loop.py` pattern-matches no-tool-call responses against intent-language regexes ("I will proceed...", "let's start...") and, once per run, forces one more turn instead of ending on them. Result: `batch-15-files-sufficient-budget` 0/5 → 5/5 (nudge fires once at step 2, model then does the real 15 writes); `batch-15-files` (insufficient budget) re-pinned to its now-correct honest-decline behavior, also 5/5, zero nudge fires — the decline path was never broken and the nudge doesn't leak into it. |
 
-Biggest actionable item: **2a, 6b, 8a are fixed** (Phases 2.5, 3.5, 3.7 respectively), and **10's
-harness fix is real and stands** (budget transparency, no regressions) — but it only fixed the
-decline branch. **9 is not actually closed**: finding 11 shows the same "say it, don't do it"
-failure recurs, unchanged, once proceeding rather than declining is the correct call. Arm 2
-(a task-independent follow-through instruction in Kukulkán's system prompt) is the leading
-candidate but is not yet implemented or tested. The current standout open items are, in order:
-**9/11's follow-through bug** (now the best-evidenced open item — two independent 0/5 runs),
-**7's residual flake** — still recurring at roughly 1-in-5 on the A′ task, still a bare empty
-response with zero tool calls attempted, still unexplained — and **8c**, a smaller but real gap
-where skills that specify a procedure don't get that procedure fully followed even when they're
-being read.
+Biggest actionable item: **2a, 6b, 8a, 9/10/11 are all fixed** (Phases 2.5, 3.5, 3.7, and Phase 4
+respectively). Findings 9 and 11 are now fully closed: the "declare intent, don't act" bug — two
+independent prompt-only attempts (a system-prompt rule, then a worked example labeling the exact
+failure sentence WRONG) both produced null results, confirming this needed a harness-level fix,
+not a prompt one. The intent-nudge in `loop.py` closes both the general bug (11) and its original
+manifestation (9), and the full eval suite is green (`evals/results/results_20260712T230253Z.json`)
+modulo `tricky-quotes`' expected escaping-correctness variance. The current standout open items
+are, in order: **7's residual flake** — still recurring at roughly 1-in-5 on the A′ task, still a
+bare empty response with zero tool calls attempted, still unexplained — and **8c**, a smaller but
+real gap where skills that specify a procedure don't get that procedure fully followed even when
+they're being read.
 
 ---
 
