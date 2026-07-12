@@ -1,0 +1,14 @@
+name: swallow-canary
+# NOTES.md finding 7: the same tricky-quotes ("A-prime") task flakes into a
+# bare empty response (no content, no tool_calls) roughly 1-in-5 runs, for an
+# undiagnosed reason. This case exists to MEASURE that flake rate over time,
+# not to gate the suite on it — expect this to fail ~20-40% of runs at n=5.
+task: >
+  Write a Python file named quotes.py to the workspace. It should assign a
+  string to a variable called MESSAGE containing: nested double and single
+  quotes, an apostrophe in ordinary prose (e.g. "it's"), and — as a separate
+  statement — a triple-quoted docstring. The file must be valid, runnable
+  Python.
+expected_flaky: true
+checks:
+  - type: no_swallow

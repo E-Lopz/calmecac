@@ -1,0 +1,693 @@
+{
+  "timestamp": "20260712T002611Z",
+  "n": 5,
+  "cases": [
+    {
+      "name": "batch-15-files",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T002315Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 68,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (one for each file write) plus a few for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: \"This task needs approximately 15 steps (one for each file write) plus a few for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.\""
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T002319Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 69,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 file writes) plus 1-2 for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: \"This task needs approximately 15 steps (15 file writes) plus 1-2 for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.\""
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T002323Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 69,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 file writes) plus 1-2 for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: \"This task needs approximately 15 steps (15 file writes) plus 1-2 for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.\""
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T002327Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 69,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 file writes) plus 1-2 for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: \"This task needs approximately 15 steps (15 file writes) plus 1-2 for verification and the final answer. Since the budget is not specified, I will proceed with creating the files. Let's start with the first few files.\""
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T002331Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 71,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (one for each file creation) plus a few additional steps for verification and the final answer. Since the budget is not specified, I will proceed with creating the first 15 files and then provide the final answer.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: 'This task needs approximately 15 steps (one for each file creation) plus a few additional steps for verification and the final answer. Since the budget is not specified, I will proceed with creating the first 15 files and then provide the final answer.'"
+            }
+          ],
+          "all_passed": false
+        }
+      ],
+      "check_pass_rates": {
+        "final_answer_regex:'progressing'": 0.0
+      },
+      "overall_pass_rate": 0.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 69.2,
+      "swallow_count": 0
+    },
+    {
+      "name": "hello-baseline",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T002335Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002338Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002341Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002344Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002347Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "file_written:hello.txt": 1.0,
+        "tool_not_called:write-and-verify-code": 1.0,
+        "tool_not_called:estimate-before-batch": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 53,
+      "swallow_count": 0
+    },
+    {
+      "name": "swallow-canary",
+      "expected_flaky": true,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T002349Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002403Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002416Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002429Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002443Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "no_swallow": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 3,
+      "mean_eval_count_total": 255,
+      "swallow_count": 0
+    },
+    {
+      "name": "tricky-quotes",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T002456Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002509Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002522Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 257,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002536Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002549Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 255,
+          "swallowed": 0,
+          "final_answer": "The file `quotes.py` has been successfully written to the workspace. It contains the following content:\n\n```python\nMESSAGE = \"\"\"nested double and single quotes, an apostrophe in ordinary prose (e.g. \"it's\"), and \u2014 as a separate statement \u2014 a triple-quoted docstring.\"\"\"\n\n\"\"\"This is a triple-quoted docstring.\"\"\"\n```\n\nThis file is valid, runnable Python code. Let me know if you need further assistance!",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "file_written:quotes.py": 1.0,
+        "tool_called:write-and-verify-code": 1.0,
+        "no_swallow": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 3,
+      "mean_eval_count_total": 255.4,
+      "swallow_count": 0
+    },
+    {
+      "name": "weather-decline",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T002602Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 33,
+          "swallowed": 0,
+          "final_answer": "I currently don't have access to real-time data, including weather information. For the current weather in Paris, I recommend checking a reliable weather service or app.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002604Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 34,
+          "swallowed": 0,
+          "final_answer": "I currently don't have access to real-time data, including weather information. You may want to check a weather service or app for the latest weather updates in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002606Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 34,
+          "swallowed": 0,
+          "final_answer": "I currently don't have access to real-time data, including weather information. You may want to check a weather service or app for the latest weather updates in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002608Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 33,
+          "swallowed": 0,
+          "final_answer": "I currently don't have access to real-time data, including weather information. For the current weather in Paris, I recommend checking a reliable weather service or app.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T002609Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 34,
+          "swallowed": 0,
+          "final_answer": "I currently don't have access to real-time data, including weather information. You may want to check a weather service or app for the latest weather updates in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "tool_not_called:write_file": 1.0,
+        "final_answer_regex:\"(?i)(don't have access|d\"": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 1,
+      "mean_eval_count_total": 33.6,
+      "swallow_count": 0
+    }
+  ]
+}
