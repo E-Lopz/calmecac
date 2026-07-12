@@ -1,0 +1,13 @@
+name: hello-baseline
+# T1: the trivial sanity-check task (Phase 2.5 acceptance shape). Should
+# complete fast, with no skill reached for on a task that doesn't need one.
+task: Write the text "Hello, world!" to a file named hello.txt in the workspace.
+max_steps: 3
+checks:
+  - type: completed
+  - type: file_written
+    path: hello.txt
+  - type: tool_not_called
+    name: write-and-verify-code
+  - type: tool_not_called
+    name: estimate-before-batch

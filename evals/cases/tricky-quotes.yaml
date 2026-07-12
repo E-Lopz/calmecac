@@ -1,0 +1,17 @@
+name: tricky-quotes
+# NOTES.md findings 2c/6/8 (the "A-prime" task): tricky quote/escape content
+# is what originally surfaced the unescaped-apostrophe bug, the skill-name-
+# as-tool-name flake, and the skill-tool false-success bug.
+task: >
+  Write a Python file named quotes.py to the workspace. It should assign a
+  string to a variable called MESSAGE containing: nested double and single
+  quotes, an apostrophe in ordinary prose (e.g. "it's"), and — as a separate
+  statement — a triple-quoted docstring. The file must be valid, runnable
+  Python.
+checks:
+  - type: file_written
+    path: quotes.py
+    must_parse_python: true
+  - type: tool_called
+    name: write-and-verify-code
+  - type: no_swallow
