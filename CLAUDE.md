@@ -76,7 +76,8 @@ plain text (or `max_steps` from `config.yaml` is exhausted).
 - **`harness/discord_gateway.py`** — a second, Discord-driven caller of `run_task` (Phase 5),
   alongside `harness/run.py`. Does not change `loop.py`/`tools.py` behavior beyond a `source`
   parameter on `run_task` (`"cli"` vs `"discord"`, logged on the `run_start` line). Single-task
-  concurrency, whole-task consent (👍 reaction) before running, live step streaming by tailing
+  concurrency, triggered only by messages that @-mention the bot (the mention itself is the
+  consent signal), live step streaming by tailing
   the same `.jsonl` log every run already writes. Configured via `config.yaml`'s `discord`
   section plus `DISCORD_BOT_TOKEN`/`DISCORD_ALLOWED_USER_ID` in a gitignored `.env` (see README).
 

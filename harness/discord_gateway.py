@@ -7,6 +7,7 @@ Run with: python -m harness.discord_gateway
 import asyncio
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -28,7 +29,14 @@ if not BOT_TOKEN:
 ALLOWED_USER_ID = os.environ.get("DISCORD_ALLOWED_USER_ID")
 if not ALLOWED_USER_ID:
     sys.exit("DISCORD_ALLOWED_USER_ID is not set (check your .env file). Aborting startup.")
-ALLOWED_USER_ID = int(ALLOWED_USER_ID)
+try:
+    ALLOWED_USER_ID = int(ALLOWED_USER_ID)
+except ValueError:
+    sys.exit(
+        f"DISCORD_ALLOWED_USER_ID must be a numeric Discord user id, got {ALLOWED_USER_ID!r}. "
+        "Enable Developer Mode in Discord (Settings > Advanced), then right-click your profile "
+        "and 'Copy User ID'."
+    )
 
 with open(CONFIG_PATH) as f:
     CONFIG = yaml.safe_load(f)
@@ -54,6 +62,10 @@ def _truncate(text, log_name):
     return text[: MAX_MESSAGE_LEN - len(suffix)] + suffix
 
 
+def _strip_mention(content):
+    return re.sub(rf"<@!?{client.user.id}>", "", content).strip()
+
+
 def _format_tool_call(event):
     args = ", ".join(f"{k}={v!r}" for k, v in event["arguments"].items())
     return f"step {event['step']}: {event['name']}({args}) -> {event['result_head']}"
@@ -68,7 +80,10 @@ async def _stream_tool_calls(channel, log_path, stop_event):
         if log_path.exists():
             with open(log_path) as f:
                 f.seek(pos)
-                for line in f:
+                while True:
+                    line = f.readline()
+                    if not line:
+                        break
                     pos = f.tell()
                     event = json.loads(line)
                     if event["type"] == "tool_call":
@@ -80,11 +95,12 @@ async def _stream_tool_calls(channel, log_path, stop_event):
 
 async def _run_and_report(message):
     channel = message.channel
+    task_text = _strip_mention(message.content)
     await message.add_reaction("⏳")  # hourglass
 
     existing_logs = set(LOG_DIR.glob("*.jsonl"))
     loop = asyncio.get_running_loop()
-    run_future = loop.run_in_executor(None, run_task, message.content, CONFIG, "discord")
+    run_future = loop.run_in_executor(None, run_task, task_text, CONFIG, "discord")
 
     log_path = None
     for _ in range(40):  # up to ~10s for the log file to appear
@@ -110,27 +126,6 @@ async def _run_and_report(message):
     await message.add_reaction("❌" if answer.startswith("aborted:") else "✅")
 
 
-async def _get_consent(message):
-    prompt = await message.reply(
-        f"Task received: {message.content[:200]}. React \U0001f44d within 60s to run it."
-    )
-    await prompt.add_reaction("\U0001f44d")
-
-    def check(reaction, user):
-        return (
-            reaction.message.id == prompt.id
-            and str(reaction.emoji) == "\U0001f44d"
-            and user.id == ALLOWED_USER_ID
-        )
-
-    try:
-        await client.wait_for("reaction_add", timeout=60.0, check=check)
-        return True
-    except asyncio.TimeoutError:
-        await prompt.reply("cancelled")
-        return False
-
-
 @client.event
 async def on_ready():
     print(f"[gateway] logged in as {client.user}, channel={CHANNEL_ID}, allowed_user={ALLOWED_USER_ID}")
@@ -143,16 +138,17 @@ async def on_message(message):
     if message.author.id == client.user.id:
         return
 
-    if message.channel.id != CHANNEL_ID or message.author.id != ALLOWED_USER_ID:
+    if (
+        message.channel.id != CHANNEL_ID
+        or message.author.id != ALLOWED_USER_ID
+        or not client.user.mentioned_in(message)
+    ):
         print(f"[gateway debug] ignored message author={message.author.id} "
               f"channel={message.channel.id} content={message.content[:50]!r}")
         return
 
     if busy:
         await message.reply("busy with the current task — send again when I finish")
-        return
-
-    if not await _get_consent(message):
         return
 
     busy = True
