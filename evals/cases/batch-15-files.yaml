@@ -10,6 +10,18 @@ name: batch-15-files
 # baseline's actual 0/5 failure mode: estimate-before-batch triggers, model
 # says "I will proceed", zero write_file calls). tool_called: write_file
 # pins down that real progress happened, not just the abort string's absence.
+#
+# NOTES.md finding 10: after injecting the step budget into the system
+# prompt, this case is a reliable 0/5 for a THIRD, now-correct reason — the
+# model declines immediately and honestly ("needs ~17 steps... budget is
+# 10... raise the budget, or I complete the first 8"), matching
+# estimate-before-batch's own worked example, instead of exhausting the
+# budget or no-oping. That's intentionally still a "failure" under these
+# checks: this case is scoped to documenting behavior under an
+# *insufficient* budget (exhaustion or decline), not to requiring
+# completion. See batch-15-files-sufficient-budget.yaml for the completion
+# case, run with enough budget headroom that finishing is the expected
+# outcome.
 task: >
   Create 15 files in the workspace named part_01.txt through part_15.txt
   (zero-padded two-digit numbers), each containing the text "part N" where N

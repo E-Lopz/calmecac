@@ -501,6 +501,56 @@ without deciding what "correct" means here would hide the judgment call rather t
 validated by direct before/after transcript comparison.** The residual "8c"-style gap (does the
 model's decline actually happen, not just get planned) turned out not to exist once the budget
 was visible; no prompt change was needed to get there.
+**Revised by finding 11 below: this conclusion only holds for the decline branch. The same
+"I will proceed" pattern reappears, unchanged, once the budget is sufficient and proceeding is
+the correct call — read finding 11 before treating arm 2 as unnecessary in general.**
+
+---
+
+## 11. Finding 10's conclusion only covers the decline branch — "I will proceed" persists when proceeding is correct
+
+Finding 10's test only exercised one branch of `estimate-before-batch` step 2: budget insufficient
+(10 vs. ~17 needed) → correct decline. To check whether budget-injection fixed the underlying
+declaration-substituting-for-execution pattern in general, or only happened to fix the branch
+where declining *was* the correct action anyway, added a companion case,
+`batch-15-files-sufficient-budget.yaml` — identical task, `max_steps: 20` (task needs ~15-17), so
+completing the batch is the correct call, not declining.
+
+**Result — `--n 5`, same arm-1 harness (budget already injected): 0/5, uniform across all 5
+runs.** `completed` check passes 100% (the run never aborts) but every `file_written` check for
+`part_01.txt` through `part_15.txt` is 0% — **zero files were written in any of the 5 runs.**
+Transcript, run 1 (`logs/run_20260712T010421Z.jsonl`):
+
+```
+step 1  model_call: content='', tool_calls=[{function: {name: 'estimate-before-batch', arguments: {}}}]
+step 1  tool_call: estimate-before-batch({}) -> ok
+step 2  model_call: content="This task needs approximately 15 steps (15 writes) but the budget
+                     is 20. I will proceed to create all 15 files." tool_calls=None
+```
+
+All 5 runs match this shape (`logs/run_20260712T010424Z.jsonl`, `...010428Z`, `...010432Z`,
+`...010435Z`): the model correctly computes the estimate, correctly reads the now-visible budget,
+correctly concludes 20 ≥ 17 so it should proceed — states "I will proceed to create all 15
+files" — and then the run ends there, on step 2, as a final answer. No `write_file` call, in any
+run, ever happens.
+
+**This falsifies finding 10's "arm 2 not needed" conclusion.** The declaration-substituting-for-
+execution pattern from finding 9 is not fixed by budget visibility — it was never really about the
+budget. What changed between finding 9 and finding 10's test was that, coincidentally, the correct
+action given an insufficient budget *is* an immediate text answer (a decline), so a model that
+turns its own stated intent into a final answer looks correct by accident. The moment the correct
+action is a *tool call* (proceeding with real writes), the same underlying bug — "I said I would
+act" gets treated as equivalent to "I acted" — reappears identically, budget known or not.
+
+**Taxonomy: prompt/skill-design, open again.** Finding 10's harness fix (budget injection) stands
+on its own merits — the decline branch is measurably better and the change is harmless elsewhere
+(no regressions across the other 4 baseline cases) — but it does not close finding 9. The
+task-independent follow-through line proposed alongside finding 9 (arm 2: "after consulting a
+skill, your next step must be a tool call or an explicit decline — never a statement of intent")
+is back on the table as the more likely actual fix, since this finding shows the bug is
+budget-independent. Not applied here — flagging for a decision before editing
+`agents/kukulkan/prompt.md`, since finding 10's premature conclusion is exactly the kind of miss
+a second data point was needed to catch.
 
 ---
 
@@ -522,15 +572,21 @@ was visible; no prompt change was needed to get there.
 | 8a | Skill-tool leniency | Argument leniency (Phase 3.6) let the model treat "got a response back" as "action happened" — 0/5 real writes | **harness** (**fixed Phase 3.7**, notice prefix) |
 | 8b | Skill-tool leniency | New diagnostic logging (`generation_swallowed`, `run_start`, eval/done fields) caught 8a immediately on first use | none (working as designed) |
 | 8c | Skill-tool leniency | Model follows a skill's escaping guidance but skips its explicit verification step every time | **prompt/skill-design** (open) |
-| 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **prompt/skill-design** (superseded by 10, root cause was harness transparency) |
-| 10 | Finding 9 follow-up (budget injection, arm 1) | One-line harness fix (inject `max_steps` into the system prompt) turns "I will proceed" into an honest, correctly-reasoned decline matching the skill's own worked example; no prompt change needed | **harness** (**fixed this phase**) |
+| 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **prompt/skill-design** (harness-transparency arm fixed by 10, but 11 shows the underlying "declare intent, don't act" bug is still open) |
+| 10 | Finding 9 follow-up (budget injection, arm 1) | One-line harness fix (inject `max_steps` into the system prompt) turns "I will proceed" into an honest, correctly-reasoned decline matching the skill's own worked example, on the tight-budget case | **harness** (**fixed this phase** — real, no regressions — but see 11: doesn't close 9 in general) |
+| 11 | Finding 10 follow-up (sufficient budget, same task) | Same task with `max_steps: 20` (headroom to actually finish) still goes 0/5 on every `file_written` check — `completed` passes but zero files get written; "I will proceed" persists even when proceeding is correct, falsifying 10's "no prompt change needed" conclusion | **prompt/skill-design** (open again — arm 2, the follow-through line in `agents/kukulkan/prompt.md`, is back on the table, not yet applied) |
 
-Biggest actionable item: **2a, 6b, 8a, and 10 are all fixed** (Phases 2.5, 3.5, 3.7, and Phase 4
-respectively). The current standout is **7's residual flake** — still recurring at roughly 1-in-5
-on the A′ task, still a bare empty response with zero tool calls attempted, still unexplained,
-and now the best-instrumented open item in this log (`generation_swallowed` + `eval_count` fire
-reliably whenever it happens). Runner-up: **8c**, a smaller but real gap — skills that specify a
-procedure don't get that procedure fully followed even when they're being read.
+Biggest actionable item: **2a, 6b, 8a are fixed** (Phases 2.5, 3.5, 3.7 respectively), and **10's
+harness fix is real and stands** (budget transparency, no regressions) — but it only fixed the
+decline branch. **9 is not actually closed**: finding 11 shows the same "say it, don't do it"
+failure recurs, unchanged, once proceeding rather than declining is the correct call. Arm 2
+(a task-independent follow-through instruction in Kukulkán's system prompt) is the leading
+candidate but is not yet implemented or tested. The current standout open items are, in order:
+**9/11's follow-through bug** (now the best-evidenced open item — two independent 0/5 runs),
+**7's residual flake** — still recurring at roughly 1-in-5 on the A′ task, still a bare empty
+response with zero tool calls attempted, still unexplained — and **8c**, a smaller but real gap
+where skills that specify a procedure don't get that procedure fully followed even when they're
+being read.
 
 ---
 
