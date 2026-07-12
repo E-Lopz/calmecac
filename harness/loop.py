@@ -62,6 +62,12 @@ def run_task(task: str, config) -> str:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     log_path = LOG_DIR / f"run_{timestamp}.jsonl"
 
+    _log(log_path, {
+        "type": "run_start",
+        "messages": messages,
+        "tool_names": list(REGISTRY),
+    })
+
     max_steps = config.get("max_steps", 10)
     tool_records = []
 
@@ -71,12 +77,30 @@ def run_task(task: str, config) -> str:
         message = response["message"]
         messages.append(message)
 
-        _log(log_path, {
+        eval_count = response.get("eval_count")
+        prompt_eval_count = response.get("prompt_eval_count")
+        done_reason = response.get("done_reason")
+        swallowed = (
+            not message.get("content")
+            and not message.get("tool_calls")
+            and eval_count is not None
+            and eval_count > 20
+        )
+
+        model_call_entry = {
             "step": step,
             "type": "model_call",
             "prompt": prompt_snapshot,
             "response": message,
-        })
+            "eval_count": eval_count,
+            "prompt_eval_count": prompt_eval_count,
+            "done_reason": done_reason,
+        }
+        if swallowed:
+            model_call_entry["generation_swallowed"] = True
+            print(f"WARNING: model generated {eval_count} tokens but nothing surfaced "
+                  "(parser swallow or discarded thinking)")
+        _log(log_path, model_call_entry)
 
         tool_calls = message.get("tool_calls")
         if not tool_calls:
@@ -120,6 +144,8 @@ def run_task(task: str, config) -> str:
                 log_entry["duplicate_call"] = True
             if name in SKILL_NAMES:
                 log_entry["skill_loaded"] = name
+                if arguments:
+                    log_entry["skill_args_discarded"] = arguments
             _log(log_path, log_entry)
 
     successful, distinct, repeats, errors, verdict = _abort_stats(tool_records)

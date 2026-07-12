@@ -324,6 +324,61 @@ regression.
 
 ---
 
+## 8. Skill-tool leniency: from silent TypeError to false-success to fixed
+
+Phase 3.6 added two harness changes on top of Phase 3.5's skills-as-tools redesign, both driven
+directly by finding 7: (1) diagnostic logging — `loop.py` now logs `eval_count`,
+`prompt_eval_count`, `done_reason` on every `model_call` log line, a `run_start` line recording
+the full outbound messages and registered tool names, and a `generation_swallowed` flag (+
+stdout warning) when a step's response has empty content, no `tool_calls`, and `eval_count > 20`
+— the mechanical signature finding 7 left undiagnosed; and (2) skill-tool argument leniency —
+`_make_skill_func` in `tools.py` was changed to accept and silently ignore any keyword
+arguments, since Phase 3.5's A′ run 2 showed the model calling skill-tools with
+`write_file`-shaped arguments (`path`, `content`) and getting a bare `TypeError` back.
+
+**The leniency fix backfired in a new way.** Rerunning A′ ×5 after the change: 3/5 runs called
+`write-and-verify-code` with `write_file`-shaped args, got the skill body back with **no error**
+— and then the model declared success in the very next step **without ever calling
+`write_file`**. No file landed in `workspace/` in any of the 5 runs. The other 2/5 hit the new
+`generation_swallowed` detector cleanly (the same undiagnosed residual flake from finding 7,
+confirmed still present and now instrumented). The diagnostic logging worked exactly as
+designed — it caught this new failure mode immediately, in the very first acceptance run after
+shipping it.
+
+**Phase 3.7 fixed the false-success problem directly.** `_make_skill_func` now prefixes the
+returned body with an explicit notice when called with arguments: `"NOTE: '<name>' is an
+instructions-only tool. Your arguments were IGNORED — no file was written and no action was
+taken..."` followed by the skill body. Rerunning A′ ×5 again: **4/5 runs now proceed to a real
+`write_file` call** after receiving the notice (up from 0/5), all four written files parse as
+valid Python (`ast.parse`, zero `SyntaxError`s), and escaping is correct in every case. The 5th
+run hit the same pre-existing `generation_swallowed` flake before any tool call was attempted —
+unrelated to this change, confirmed by the log.
+
+**One gap survives the fix.** The skill's own procedure (`write-and-verify-code/SKILL.md`)
+explicitly instructs: "After write_file succeeds, read_file the result and check... Only report
+success after step 4 passes." None of the 4 successful runs called `read_file` — every one went
+`write_file` → final answer directly. The model absorbed the skill's *escaping* guidance (the
+written content is consistently correct) but skipped its *verification* step every time. Not
+investigated further per this session's scope.
+
+**Taxonomy:**
+- **False-success failure mode (Phase 3.6 leniency): fixed by Phase 3.7's notice prefix.**
+  Confirmed by direct observation — 4/5 vs 0/5 real `write_file` calls, before/after.
+- **Diagnostic logging (`generation_swallowed`, `run_start`, `eval_count`/`prompt_eval_count`/
+  `done_reason`): working as designed.** It surfaced the false-success mode immediately and
+  continues to correctly flag finding 7's residual flake every time it recurs (2/5 here) — this
+  is now the standing instrumentation for diagnosing future skill-tool and swallow-related
+  issues.
+- **New, open: skill procedure adherence is partial.** The model follows a skill's substantive
+  content (escaping rules) without following its explicit process instructions (the read-back
+  verification step). Whether this needs a prompt-level fix, a skill-wording fix, or is out of
+  scope for a 14B model is unresolved — not investigated this session.
+- **Finding 7's residual empty-response flake: still open, unaffected by Phase 3.6/3.7.**
+  Recurred at a similar rate across both phases here (2/5, then 1/5 — small samples, not
+  directly comparable), independent of the skill-tool changes made in either phase.
+
+---
+
 ## Summary — taxonomy tally
 
 | # | Experiment | Finding | Taxonomy |
@@ -339,14 +394,18 @@ regression.
 | 6a | Empty-response flake | Model calls skill names as if they were tools; explicit "NOT tools" prompt rewrite didn't fix it | **prompt** (superseded by 7, not fixed) |
 | 6b | Empty-response flake | Ollama 0.31.2 silently drops well-formed tool_calls naming an unregistered tool — no error ever reaches the harness | **harness/upstream** (**fixed Phase 3.5**, see 7) |
 | 7 | Skills-as-tools redesign | Skill-as-tool calls now surface and error cleanly instead of vanishing; a separate, content-dependent empty-response flake remains on the same task | **harness** (6b fixed) + **open** (residual flake, undiagnosed) |
+| 8a | Skill-tool leniency | Argument leniency (Phase 3.6) let the model treat "got a response back" as "action happened" — 0/5 real writes | **harness** (**fixed Phase 3.7**, notice prefix) |
+| 8b | Skill-tool leniency | New diagnostic logging (`generation_swallowed`, `run_start`, eval/done fields) caught 8a immediately on first use | none (working as designed) |
+| 8c | Skill-tool leniency | Model follows a skill's escaping guidance but skips its explicit verification step every time | **prompt/skill-design** (open) |
 
-Biggest actionable item: **2a and 6b are both fixed** (Phase 2.5 and Phase 3.5 respectively). The
-current standout is **7's residual flake** — 4/5 runs of the A′ task still produce a bare empty
-response with zero tool calls attempted, a mechanism distinct from and not explained by finding 6.
-`ablation_probe.py`-style content-dependence testing (finding 6's Task 1) is the natural next step
-to isolate it, the same way finding 6 itself was isolated — but that's deliberately not done here
-per this session's scope.
+Biggest actionable item: **2a, 6b, and 8a are all fixed** (Phases 2.5, 3.5, and 3.7
+respectively). The current standout is **7's residual flake** — still recurring at roughly 1-in-5
+on the A′ task, still a bare empty response with zero tool calls attempted, still unexplained,
+and now the best-instrumented open item in this log (`generation_swallowed` + `eval_count` fire
+reliably whenever it happens). Runner-up: **8c**, a smaller but real gap — skills that specify a
+procedure don't get that procedure fully followed even when they're being read.
 
+---
 
 ## 3. Path-escape probes
 

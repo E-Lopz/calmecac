@@ -61,9 +61,20 @@ def _parse_skill(path: Path):
     return frontmatter, body
 
 
-def _make_skill_func(body):
-    """A no-argument tool callable that just returns one skill's pre-read body."""
-    def run():
+def _make_skill_func(name, body):
+    """A tool callable that returns one skill's pre-read body. If called with
+    arguments (skills take none), prefixes the body with a notice that the
+    arguments were ignored and no action was taken, so the model doesn't
+    mistake "got a response back" for "the action happened"."""
+    def run(**kwargs):
+        if kwargs:
+            return (
+                f"NOTE: '{name}' is an instructions-only tool. Your arguments were "
+                "IGNORED — no file was written and no action was taken. Below are "
+                "the instructions you requested. After reading them, perform the "
+                "actual task using the real tools (write_file, read_file, list_dir)."
+                f"\n\n---\n\n{body}"
+            )
         return body
     return run
 
@@ -97,7 +108,7 @@ def _build_skill_tools():
                     "parameters": {"type": "object", "properties": {}, "required": []},
                 },
             },
-            _make_skill_func(body),
+            _make_skill_func(name, body),
         )
     return entries
 
