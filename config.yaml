@@ -22,3 +22,4 @@ max_steps: 10
 discord:
   enabled: false
   channel_id: null
+  verbosity: quiet

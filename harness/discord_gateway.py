@@ -48,6 +48,10 @@ CHANNEL_ID = _discord_config.get("channel_id")
 if not CHANNEL_ID:
     sys.exit("config.yaml: discord.channel_id is not set.")
 
+DEFAULT_VERBOSITY = _discord_config.get("verbosity", "quiet")
+if DEFAULT_VERBOSITY not in ("quiet", "steps"):
+    sys.exit(f"config.yaml: discord.verbosity must be 'quiet' or 'steps', got {DEFAULT_VERBOSITY!r}.")
+
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
@@ -60,6 +64,14 @@ busy = False  # single-task-at-a-time gate; no queue in this phase
 HISTORY = {}
 MAX_HISTORY_EXCHANGES = 6
 MAX_HISTORY_TOKENS = 2000
+
+# Per-channel runtime verbosity override (!verbose). Not persisted — falls
+# back to DEFAULT_VERBOSITY (config.yaml) on gateway restart.
+CHANNEL_VERBOSITY = {}
+
+
+def _verbosity_for(channel_id):
+    return CHANNEL_VERBOSITY.get(channel_id, DEFAULT_VERBOSITY)
 
 
 def _truncate(text, log_name):
@@ -118,9 +130,46 @@ async def _stream_tool_calls(channel, log_path, stop_event):
         await asyncio.sleep(1.0)
 
 
+async def _stream_progress_quiet(channel, log_path, stop_event):
+    """Quiet-mode counterpart to _stream_tool_calls: posts nothing per step.
+    Only once a run passes 4 steps does it post a single status message, then
+    edit that same message every ~5 steps with a one-line progress note —
+    Discord bots can't edit another user's message, so this status message is
+    a separate, bot-owned post rather than the hourglass reaction itself."""
+    pos = 0
+    step = 0
+    tool_call_count = 0
+    status_message = None
+    last_noted_step = 0
+    while True:
+        if log_path.exists():
+            with open(log_path) as f:
+                f.seek(pos)
+                while True:
+                    line = f.readline()
+                    if not line:
+                        break
+                    pos = f.tell()
+                    event = json.loads(line)
+                    step = event.get("step", step)
+                    if event["type"] == "tool_call":
+                        tool_call_count += 1
+            if step > 4 and step - last_noted_step >= 5:
+                note = f"working — step {step}, {tool_call_count} tool call(s) made"
+                if status_message is None:
+                    status_message = await channel.send(note)
+                else:
+                    await status_message.edit(content=note)
+                last_noted_step = step
+        if stop_event.is_set():
+            break
+        await asyncio.sleep(1.0)
+
+
 async def _run_and_report(message):
     channel = message.channel
     task_text = _strip_mention(message.content)
+    verbosity = _verbosity_for(channel.id)
     await message.add_reaction("⏳")  # hourglass
 
     prior_messages = list(HISTORY.get(channel.id, []))
@@ -138,7 +187,10 @@ async def _run_and_report(message):
         await asyncio.sleep(0.25)
 
     stop_event = asyncio.Event()
-    stream_task = asyncio.create_task(_stream_tool_calls(channel, log_path, stop_event)) if log_path else None
+    stream_task = None
+    if log_path:
+        streamer = _stream_tool_calls if verbosity == "steps" else _stream_progress_quiet
+        stream_task = asyncio.create_task(streamer(channel, log_path, stop_event))
 
     try:
         answer = await run_future
@@ -181,6 +233,12 @@ async def on_message(message):
     if message.content.strip() == "!reset":
         HISTORY.pop(message.channel.id, None)
         await message.reply("context cleared.")
+        return
+
+    if message.content.strip() == "!verbose":
+        new = "steps" if _verbosity_for(message.channel.id) == "quiet" else "quiet"
+        CHANNEL_VERBOSITY[message.channel.id] = new
+        await message.reply(f"verbosity: {new}")
         return
 
     if not client.user.mentioned_in(message):

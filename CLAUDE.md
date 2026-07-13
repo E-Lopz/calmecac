@@ -89,6 +89,13 @@ plain text (or `max_steps` from `config.yaml` is exhausted).
   clears a channel's history on demand. The CLI path (`run.py`) never passes `prior_messages`, so
   `history_len` is always 0 there.
 
+  `discord.verbosity` (`config.yaml`, default `quiet`) controls step reporting: `quiet` posts only
+  reactions and the final answer, editing one bot-owned status message in place every ~5 steps for
+  runs over 4 steps (a separate message from the ⏳ reaction, since bots can't edit another user's
+  message); `steps` keeps the original per-tool-call message stream. `!verbose` flips a channel's
+  verbosity at runtime; not persisted, resets to the config default on restart. `.jsonl` logging is
+  unaffected either way — full step detail is always written; only the Discord side is quieter.
+
 - **`agents/<name>/prompt.md`** — one directory per agent persona, containing just the system
   prompt. Currently only `agents/kukulkan/`. Not templated or parsed — read as raw text.
 
