@@ -73,14 +73,14 @@ def _call_tool(name, arguments):
     return str(result), None
 
 
-def run_task(task: str, config, source="cli") -> str:
+def run_task(task: str, config, source="cli", prior_messages: list = None) -> str:
     max_steps = config.get("max_steps", 10)
     system_prompt = PROMPT_PATH.read_text() + f"\n\nYou have a budget of {max_steps} steps for this task."
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": task},
-    ]
+    messages = [{"role": "system", "content": system_prompt}]
+    if prior_messages:
+        messages.extend(prior_messages)
+    messages.append({"role": "user", "content": task})
 
     LOG_DIR.mkdir(exist_ok=True)
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -91,6 +91,7 @@ def run_task(task: str, config, source="cli") -> str:
         "messages": messages,
         "tool_names": list(REGISTRY),
         "source": source,
+        "history_len": len(prior_messages) if prior_messages else 0,
     })
 
     tool_records = []

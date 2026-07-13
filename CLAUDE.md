@@ -75,11 +75,19 @@ plain text (or `max_steps` from `config.yaml` is exhausted).
 
 - **`harness/discord_gateway.py`** — a second, Discord-driven caller of `run_task` (Phase 5),
   alongside `harness/run.py`. Does not change `loop.py`/`tools.py` behavior beyond a `source`
-  parameter on `run_task` (`"cli"` vs `"discord"`, logged on the `run_start` line). Single-task
-  concurrency, triggered only by messages that @-mention the bot (the mention itself is the
-  consent signal), live step streaming by tailing
-  the same `.jsonl` log every run already writes. Configured via `config.yaml`'s `discord`
-  section plus `DISCORD_BOT_TOKEN`/`DISCORD_ALLOWED_USER_ID` in a gitignored `.env` (see README).
+  parameter (`"cli"` vs `"discord"`, logged on the `run_start` line) and, as of Phase 6a, an
+  optional `prior_messages` parameter inserted between the system prompt and the new task.
+  Single-task concurrency, triggered only by messages that @-mention the bot (the mention itself
+  is the consent signal), live step streaming by tailing the same `.jsonl` log every run already
+  writes. Configured via `config.yaml`'s `discord` section plus
+  `DISCORD_BOT_TOKEN`/`DISCORD_ALLOWED_USER_ID` in a gitignored `.env` (see README).
+
+  Phase 6a adds short-term, in-process conversation memory: a per-channel `HISTORY` dict of
+  completed exchanges only (task text + final/abort answer — no tool-call steps), capped at 6
+  exchanges and ~2000 estimated tokens (`len // 4`), passed to `run_task` as `prior_messages` on
+  the next message in that channel. Nothing is persisted — it dies with the process, and `!reset`
+  clears a channel's history on demand. The CLI path (`run.py`) never passes `prior_messages`, so
+  `history_len` is always 0 there.
 
 - **`agents/<name>/prompt.md`** — one directory per agent persona, containing just the system
   prompt. Currently only `agents/kukulkan/`. Not templated or parsed — read as raw text.

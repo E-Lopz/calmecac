@@ -54,6 +54,13 @@ client = discord.Client(intents=intents)
 
 busy = False  # single-task-at-a-time gate; no queue in this phase
 
+# Phase 6a: short-term, in-process conversation memory, keyed by channel id.
+# Final exchanges only (user task text + assistant final/abort answer) — no
+# tool-call steps. Dies with the gateway; restarting it is how you wipe memory.
+HISTORY = {}
+MAX_HISTORY_EXCHANGES = 6
+MAX_HISTORY_TOKENS = 2000
+
 
 def _truncate(text, log_name):
     if len(text) <= MAX_MESSAGE_LEN:
@@ -64,6 +71,24 @@ def _truncate(text, log_name):
 
 def _strip_mention(content):
     return re.sub(rf"<@!?{client.user.id}>", "", content).strip()
+
+
+def _estimate_tokens(messages):
+    return sum(len(m["content"]) for m in messages) // 4
+
+
+def _trim_history(history):
+    """Cap at MAX_HISTORY_EXCHANGES exchanges, then drop oldest exchanges until
+    under MAX_HISTORY_TOKENS estimated tokens. Returns (trimmed, dropped_count)."""
+    dropped = 0
+    max_messages = MAX_HISTORY_EXCHANGES * 2
+    if len(history) > max_messages:
+        dropped += (len(history) - max_messages) // 2
+        history = history[-max_messages:]
+    while history and _estimate_tokens(history) > MAX_HISTORY_TOKENS:
+        history = history[2:]
+        dropped += 1
+    return history, dropped
 
 
 def _format_tool_call(event):
@@ -98,9 +123,11 @@ async def _run_and_report(message):
     task_text = _strip_mention(message.content)
     await message.add_reaction("⏳")  # hourglass
 
+    prior_messages = list(HISTORY.get(channel.id, []))
+
     existing_logs = set(LOG_DIR.glob("*.jsonl"))
     loop = asyncio.get_running_loop()
-    run_future = loop.run_in_executor(None, run_task, task_text, CONFIG, "discord")
+    run_future = loop.run_in_executor(None, run_task, task_text, CONFIG, "discord", prior_messages)
 
     log_path = None
     for _ in range(40):  # up to ~10s for the log file to appear
@@ -125,6 +152,14 @@ async def _run_and_report(message):
     await message.remove_reaction("⏳", client.user)
     await message.add_reaction("❌" if answer.startswith("aborted:") else "✅")
 
+    history = HISTORY.get(channel.id, [])
+    history.append({"role": "user", "content": task_text})
+    history.append({"role": "assistant", "content": answer})
+    history, dropped = _trim_history(history)
+    HISTORY[channel.id] = history
+    if dropped:
+        print(f"[gateway] dropped {dropped} oldest exchange(s) from channel {channel.id} history (budget)")
+
 
 @client.event
 async def on_ready():
@@ -138,12 +173,18 @@ async def on_message(message):
     if message.author.id == client.user.id:
         return
 
-    if (
-        message.channel.id != CHANNEL_ID
-        or message.author.id != ALLOWED_USER_ID
-        or not client.user.mentioned_in(message)
-    ):
+    if message.channel.id != CHANNEL_ID or message.author.id != ALLOWED_USER_ID:
         print(f"[gateway debug] ignored message author={message.author.id} "
+              f"channel={message.channel.id} content={message.content[:50]!r}")
+        return
+
+    if message.content.strip() == "!reset":
+        HISTORY.pop(message.channel.id, None)
+        await message.reply("context cleared.")
+        return
+
+    if not client.user.mentioned_in(message):
+        print(f"[gateway debug] ignored message (no mention) author={message.author.id} "
               f"channel={message.channel.id} content={message.content[:50]!r}")
         return
 
