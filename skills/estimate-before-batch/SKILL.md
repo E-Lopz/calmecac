@@ -2,7 +2,7 @@
 name: estimate-before-batch
 description: Use when a task asks to create, modify, or process many files
   or repeat an action multiple times — plan the step count before starting.
-version: 1
+version: 2
 ---
 
 # Estimate Before Batch
@@ -19,18 +19,30 @@ items, repeated operations).
    start. Instead, report immediately: "This task needs approximately X
    steps but the budget is Y. Options: raise the budget, or I complete
    the first Y-2 items now."
-3. If the estimate fits, proceed, and track your count as you go.
+3. If the estimate fits the budget, do NOT announce your plan or say you will
+   proceed — make the first tool call immediately, in this same response, and
+   continue one tool call per step until all items are done.
 4. Reserve your last step for the final answer — never spend the entire
    budget on tool calls.
 
-## Worked example (real failure)
+## Worked example — budget insufficient
 
 Task: create part_01.txt through part_15.txt, budget 10 steps.
+Estimate: ~17 steps (15 writes + list_dir + answer). 17 > 10 — does not fit.
 
-WRONG (what happened): started writing immediately, produced 10 of 15
-files, aborted at the budget with no warning and no summary of what was
-left undone.
+WRONG: start writing files and run out of budget at part_10 with no warning.
 
-RIGHT: "This needs ~17 steps (15 writes + list_dir + answer) but the
-budget is 10. Should I proceed with the first 8 and report, or should
-the budget be raised?"
+RIGHT: "This task needs approximately 17 steps but the budget is 10. Options:
+raise the budget, or I complete the first 8 items now and report."
+
+## Worked example — budget sufficient
+
+Task: create part_01.txt through part_15.txt, budget 20 steps.
+Estimate: ~17 steps (15 writes + list_dir + answer). 17 <= 20 — it fits.
+
+WRONG: "The estimate is 17 and the budget is 20. I will proceed to create the files."
+(A statement of intent with no tool call ends the task immediately — nothing
+gets written.)
+
+RIGHT: call write_file for part_01.txt immediately, in this same response, and
+continue one file per step until done, then give the final answer.

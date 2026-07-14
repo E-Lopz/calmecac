@@ -15,3 +15,7 @@ think: false
 
 # Ceiling on agent loop steps (harness/loop.py).
 max_steps: 10
+
+discord:
+  enabled: True
+  channel_id: 1526000766517645437
