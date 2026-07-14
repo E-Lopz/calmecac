@@ -575,6 +575,7 @@ a second data point was needed to catch.
 | 9 | Phase 4 baseline (`batch-15-files`, 0/5) | `estimate-before-batch` triggers and estimates correctly, then the model says "I will proceed" and stops — zero `write_file` calls, budget never communicated to it | **harness** (**closed** — see 11) |
 | 10 | Finding 9 follow-up (budget injection, arm 1) | One-line harness fix (inject `max_steps` into the system prompt) turns "I will proceed" into an honest, correctly-reasoned decline matching the skill's own worked example, on the tight-budget case | **harness** (**fixed Phase 4** — real, no regressions; the decline-branch half of 9's fix, subsumed into 9's full closure by 11) |
 | 11 | Finding 10 follow-up (sufficient budget, same task) | Same task with `max_steps: 20` (headroom to actually finish) still goes 0/5 on every `file_written` check — `completed` passes but zero files get written; "I will proceed" persists even when proceeding is correct, falsifying 10's "no prompt change needed" conclusion | **harness** (**closed Phase 4**) — arm 2 (a task-independent follow-through line added to `agents/kukulkan/prompt.md`) was tried first and produced a null result: byte-identical behavior and step counts on every case, run twice. A harness-level intent-nudge followed instead — `loop.py` pattern-matches no-tool-call responses against intent-language regexes ("I will proceed...", "let's start...") and, once per run, forces one more turn instead of ending on them. Result: `batch-15-files-sufficient-budget` 0/5 → 5/5 (nudge fires once at step 2, model then does the real 15 writes); `batch-15-files` (insufficient budget) re-pinned to its now-correct honest-decline behavior, also 5/5, zero nudge fires — the decline path was never broken and the nudge doesn't leak into it. |
+| 12 | Discord two-turn arXiv follow-up: title/link mismatch | Phase 6a's final-answers-only history dropped turn 1's `fetch_url` query; turn 2's "get me the link" re-derived a *different* query (added `sortBy=lastUpdatedDate`) that silently returned an unrelated but real paper | **harness** (**fixed Phase 6b** — capped tool-call digest added to per-channel history; live-model verification of the fix still pending, see write-up) |
 
 Biggest actionable item: **2a, 6b, 8a, 9/10/11 are all fixed** (Phases 2.5, 3.5, 3.7, and Phase 4
 respectively). Findings 9 and 11 are now fully closed: the "declare intent, don't act" bug — two
@@ -616,5 +617,72 @@ runs, so a symlink pointing outside workspace fails the same check a raw `..` wo
 before checking). Didn't additionally spend live model calls trying to get the *agent* to attempt
 these paths, since the containment check is argument-content-only — it doesn't matter whether the
 path string comes from a model or from `python -c`, the same code path runs either way.
+
+---
+
+## 12. Discord two-turn arXiv follow-up: title/link mismatch across turns
+
+Observed via Discord, 2026-07-14 ~19:13-19:14 local (23:13-23:14 UTC): asked "extract the first
+paper title in arxiv of attention mechanisms" → answered **"Visual Attention Network."** 38
+seconds later, same channel: "can you get me the link" → answered with a link for a **different**
+paper, "Invariant Learning Dynamics of Transformers in Inductive Reasoning Tasks",
+`https://arxiv.org/abs/2607.11875v1`. Diagnosed from the two runs' logs
+(`logs/run_20260714T231343Z.jsonl` = turn 1, `logs/run_20260714T231421Z.jsonl` = turn 2, matched
+by task text and UTC timestamp).
+
+**Turn 1** — exactly one `fetch_url` call:
+
+```
+https://export.arxiv.org/api/query?search_query=attention&start=0&max_results=1
+```
+
+No `sortBy`. The response's only `<entry>` is `2202.09741v5`, title "Visual Attention Network" —
+the agent's answer is correct and grounded in what was fetched.
+
+**Turn 2** — also exactly one `fetch_url` call, but not the same query:
+
+```
+https://export.arxiv.org/api/query?search_query=attention&start=0&max_results=1&sortBy=lastUpdatedDate&sortOrder=descending
+```
+
+Sorting by most-recently-updated instead of arXiv's default (relevance) returns a different,
+unrelated — but real, confirmed via the fetch's own returned metadata — top hit: `2607.11875v1`,
+"Invariant Learning Dynamics of Transformers in Inductive Reasoning Tasks." The agent's turn-2
+answer matches this entry's title+id exactly (not a within-response binding error — title and
+link both came from the same `<entry>`); the mismatch is entirely *across* turns.
+
+Root cause, confirmed from turn 2's logged `run_start.messages`: Phase 6a's per-channel history is
+final-answers-only — turn 1's tool call and raw XML result are absent from turn 2's context, only
+the prose sentence `"The first paper title... is **\"Visual Attention Network\"**."` survives.
+With no record of the exact query turn 1 used, the model reconstructing "the link" from just a
+title string improvised a plausible-but-different query (added a recency sort), and arXiv silently
+served an unrelated top hit. Not a fabricated citation (a real `fetch_url` call was made and the
+ID is genuine) and not a hallucinated ID — a non-deterministic re-query against a moving target.
+
+**Taxonomy: harness (fixed, this phase — Phase 6b).** Extended per-channel history
+(`harness/discord_gateway.py`) to carry a capped tool-call digest alongside each exchange's final
+answer: up to 3 lines of `[tool] name(args) → result`, single-line, honestly truncated at 300
+chars (`[...]` marker, never silently cut), with a `[N earlier tool calls omitted]` line if more
+ran. The digest sits as a `system`-role message between the user's question and the assistant's
+answer in replayed history — the same mid-conversation injection pattern `loop.py` already uses
+for `NUDGE_MESSAGE` (finding 11), but here repeated once per historical exchange rather than
+appended once at the end of the live run. Eviction under the existing 2k-token history budget is
+two-pass: digests are stripped from the oldest exchanges first, and a final answer is only ever
+dropped as a last resort once every older digest is already gone.
+
+The digest's value for *this specific bug* is preserving turn 1's exact query URL, not the title —
+arXiv's Atom XML puts roughly 880 characters of fetch-banner and namespace boilerplate before the
+first `<entry>`, well past the 300-char cap, so the title itself doesn't survive into the digest
+for this kind of fetch. The fix's actual mechanism is query reuse: turn 2 can now see and repeat
+`search_query=attention&max_results=1` instead of inventing a `sortBy` that was never there.
+Whether qwen3:14b actually reuses it — and whether it attends to a `system` message interleaved
+mid-history at all, as opposed to one merely appended after a turn — is unverified by static
+testing; a live-model check is still needed. Two proposed eval cases live in
+`evals/cases/PROPOSED_multi_turn.md` (an outcome-pinned regression case reproducing this exact bug,
+plus a negative control) but aren't runnable yet — `evals/run.py` has no multi-turn/`turns:`
+support, only ever calling `run_task` with a single task string per case. Wiring that up (probably
+by factoring `_exchange_to_messages`/`_flatten_exchanges` out of `discord_gateway.py` into
+something both modules import) is a follow-up, not done here. Full diagnosis, evidence quotes, and
+the candidate-fix trade-off discussion that preceded this fix: `FINDING_DRAFT.md`.
 
 ---
