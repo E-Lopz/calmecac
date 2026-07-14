@@ -9,6 +9,7 @@ from harness.ollama_client import chat
 from harness.tools import REGISTRY, SKILL_NAMES
 
 PROMPT_PATH = Path(__file__).resolve().parent.parent / "agents" / "kukulkan" / "prompt.md"
+MEMORY_PATH = Path(__file__).resolve().parent.parent / "agents" / "kukulkan" / "memory.md"
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
 
 TOOL_SCHEMAS = [schema for schema, _ in REGISTRY.values()]
@@ -39,6 +40,22 @@ def _looks_like_intent(content):
 def _log(log_path, event):
     with open(log_path, "a") as f:
         f.write(json.dumps(event) + "\n")
+
+
+def _load_memory():
+    """Read the hand-authored standing memory file, if present. Returns
+    (section_text_or_None, byte_count) — byte_count is 0 when the file is
+    missing or empty."""
+    if not MEMORY_PATH.exists():
+        return None, 0
+    contents = MEMORY_PATH.read_text()
+    if not contents.strip():
+        return None, 0
+    section = (
+        "\n\n---\n\n## Standing memory (hand-authored, not agent-writable)\n\n"
+        f"{contents}"
+    )
+    return section, len(contents.encode("utf-8"))
 
 
 def _abort_stats(tool_records):
@@ -75,7 +92,10 @@ def _call_tool(name, arguments):
 
 def run_task(task: str, config, source="cli", prior_messages: list = None) -> str:
     max_steps = config.get("max_steps", 10)
+    memory_section, memory_bytes = _load_memory()
     system_prompt = PROMPT_PATH.read_text() + f"\n\nYou have a budget of {max_steps} steps for this task."
+    if memory_section:
+        system_prompt += memory_section
 
     messages = [{"role": "system", "content": system_prompt}]
     if prior_messages:
@@ -92,7 +112,9 @@ def run_task(task: str, config, source="cli", prior_messages: list = None) -> st
         "tool_names": list(REGISTRY),
         "source": source,
         "history_len": len(prior_messages) if prior_messages else 0,
+        "memory_bytes": memory_bytes,
     })
+    print("[run] memory: none" if memory_bytes == 0 else f"[run] memory: {memory_bytes} bytes injected")
 
     tool_records = []
     nudge_used = False
