@@ -58,10 +58,13 @@ plain text (or `max_steps` from `config.yaml` is exhausted).
   plain `content` instead), which is why `qwen3:14b` is the configured default.
 
 - **`harness/tools.py`** — tool implementations as plain functions (`read_file`, `write_file`,
-  `list_dir`), all routed through `_resolve()` which confines every path to `workspace/`
-  (rejects absolute paths and `..` traversal — note that `Path("a") / "/etc/passwd"` silently
-  discards the base in pathlib, so absolute paths must be checked explicitly, not just resolved).
-  `REGISTRY` maps `{tool_name: (json_schema, callable)}` — the schema is what gets sent to
+  `list_dir`), all routed through `_resolve_within()` (rejects absolute paths and `..` traversal —
+  note that `Path("a") / "/etc/passwd"` silently discards the base in pathlib, so absolute paths
+  must be checked explicitly, not just resolved). `write_file` is confined to `workspace/`
+  (via `_resolve()`); `read_file` and `list_dir` are confined to `EXPERIMENTS_ROOT` instead (via
+  `_resolve_read()`) — the directory one level above this project, containing all of the user's
+  personal projects — so the agent can read and describe sibling projects but never write to
+  them. `REGISTRY` maps `{tool_name: (json_schema, callable)}` — the schema is what gets sent to
   Ollama's `tools` parameter, the callable is invoked directly via `func(**arguments)`. Adding a
   tool means adding one function plus one `REGISTRY` entry, nothing else.
 

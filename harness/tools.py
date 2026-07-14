@@ -1,8 +1,11 @@
 """Tool implementations available to the agent loop.
 
-Every tool is restricted to reading/writing inside workspace/, so the
-agent can't touch the rest of the filesystem. Skills (skills/) are
-readable through the same kind of containment check but never writable.
+write_file is restricted to workspace/, so the agent can only ever modify
+files there. read_file and list_dir are allowed anywhere under
+EXPERIMENTS_ROOT (the directory containing all of the user's projects,
+including this one) so the agent can read and describe sibling projects —
+but never write to them. Skills (skills/) are readable through the same
+kind of containment check as workspace/, but never writable.
 """
 
 from pathlib import Path
@@ -12,23 +15,35 @@ import yaml
 WORKSPACE = (Path(__file__).resolve().parent.parent / "workspace").resolve()
 WORKSPACE.mkdir(exist_ok=True)
 
+EXPERIMENTS_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+
 SKILLS_DIR = (Path(__file__).resolve().parent.parent / "skills").resolve()
 
 
-def _resolve(path: str) -> Path:
-    """Resolve a path inside WORKSPACE, refusing anything that escapes it."""
+def _resolve_within(base: Path, label: str, path: str) -> Path:
+    """Resolve `path` inside `base`, refusing anything that escapes it."""
     candidate = Path(path)
     if candidate.is_absolute():
-        raise ValueError(f"path '{path}' must be relative to the workspace directory")
+        raise ValueError(f"path '{path}' must be relative to the {label} directory")
 
-    resolved = (WORKSPACE / candidate).resolve()
-    if resolved != WORKSPACE and WORKSPACE not in resolved.parents:
-        raise ValueError(f"path '{path}' escapes the workspace directory")
+    resolved = (base / candidate).resolve()
+    if resolved != base and base not in resolved.parents:
+        raise ValueError(f"path '{path}' escapes the {label} directory")
     return resolved
 
 
+def _resolve(path: str) -> Path:
+    """Resolve a path inside WORKSPACE — used for writes."""
+    return _resolve_within(WORKSPACE, "workspace", path)
+
+
+def _resolve_read(path: str) -> Path:
+    """Resolve a path inside EXPERIMENTS_ROOT — used for reads/listing."""
+    return _resolve_within(EXPERIMENTS_ROOT, "experiments", path)
+
+
 def read_file(path: str) -> str:
-    return _resolve(path).read_text()
+    return _resolve_read(path).read_text()
 
 
 def write_file(path: str, content: str) -> str:
@@ -39,7 +54,7 @@ def write_file(path: str, content: str) -> str:
 
 
 def list_dir(path: str) -> str:
-    target = _resolve(path)
+    target = _resolve_read(path)
     entries = sorted(p.name + ("/" if p.is_dir() else "") for p in target.iterdir())
     return "\n".join(entries) if entries else "(empty)"
 
@@ -119,13 +134,22 @@ REGISTRY = {
             "type": "function",
             "function": {
                 "name": "read_file",
-                "description": "Read the contents of a text file inside the workspace directory.",
+                "description": (
+                    "Read the contents of a text file. Read-only access to the "
+                    "entire experiments directory (the parent directory holding "
+                    "all of the user's projects, including this one under "
+                    "perso/calmecac/), not just this project's workspace."
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "path": {
                             "type": "string",
-                            "description": "Path relative to the workspace directory.",
+                            "description": (
+                                "Path relative to the experiments directory, e.g. "
+                                "'perso/calmecac/workspace/notes.txt' or "
+                                "'perso/some-other-project/README.md'."
+                            ),
                         }
                     },
                     "required": ["path"],
@@ -163,13 +187,22 @@ REGISTRY = {
             "type": "function",
             "function": {
                 "name": "list_dir",
-                "description": "List the entries of a directory inside the workspace directory.",
+                "description": (
+                    "List the entries of a directory. Read-only access to the "
+                    "entire experiments directory (the parent directory holding "
+                    "all of the user's projects, including this one under "
+                    "perso/calmecac/), not just this project's workspace."
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "path": {
                             "type": "string",
-                            "description": "Path relative to the workspace directory. Use '.' for the workspace root.",
+                            "description": (
+                                "Path relative to the experiments directory. Use "
+                                "'.' for the experiments root, or e.g. 'perso' to "
+                                "see all projects."
+                            ),
                         }
                     },
                     "required": ["path"],
