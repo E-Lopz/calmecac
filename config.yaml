@@ -16,6 +16,9 @@ think: false
 # Ceiling on agent loop steps (harness/loop.py).
 max_steps: 10
 
+# Discord gateway (harness/discord_gateway.py). Requires DISCORD_BOT_TOKEN and
+# DISCORD_ALLOWED_USER_ID in a gitignored .env (see README.md).
 discord:
   enabled: True
   channel_id: 1526000766517645437
+  verbosity: quiet

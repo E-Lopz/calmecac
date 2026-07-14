@@ -1,0 +1,565 @@
+{
+  "timestamp": "20260712T010438Z",
+  "n": 5,
+  "cases": [
+    {
+      "name": "batch-15-files-sufficient-budget",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T010421Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T010424Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 56,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 20. I will proceed with creating all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T010428Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 77,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (one for each file creation) plus a few for verification and the final answer, totaling around 17 steps. However, the budget is 20 steps, which is sufficient to complete the task. I will proceed to create the files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T010432Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 56,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 20. I will proceed with creating all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T010435Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "file_written:part_01.txt": 0.0,
+        "file_written:part_02.txt": 0.0,
+        "file_written:part_03.txt": 0.0,
+        "file_written:part_04.txt": 0.0,
+        "file_written:part_05.txt": 0.0,
+        "file_written:part_06.txt": 0.0,
+        "file_written:part_07.txt": 0.0,
+        "file_written:part_08.txt": 0.0,
+        "file_written:part_09.txt": 0.0,
+        "file_written:part_10.txt": 0.0,
+        "file_written:part_11.txt": 0.0,
+        "file_written:part_12.txt": 0.0,
+        "file_written:part_13.txt": 0.0,
+        "file_written:part_14.txt": 0.0,
+        "file_written:part_15.txt": 0.0
+      },
+      "overall_pass_rate": 0.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 58.2,
+      "swallow_count": 0
+    }
+  ]
+}

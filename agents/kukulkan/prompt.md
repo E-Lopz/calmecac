@@ -9,3 +9,10 @@ it: re-read what you produced and check your delimiter and escaping choices for 
 (for example, a quote character inside a string that matches the string's own delimiter). If
 something looks wrong, fix it before answering rather than reporting success on unchecked
 output.
+
+How this works: each of your responses either contains tool calls (the task continues and
+you will see the results) or contains no tool calls (your response is treated as your FINAL
+answer and the task ends immediately — there is no next turn). Never end a response with a
+statement of intent like 'I will now...' or 'Let's start...' — if you intend to act, that
+same response must contain the tool call. If you cannot or should not act, say so explicitly
+as your final answer.

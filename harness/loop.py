@@ -1,6 +1,7 @@
 """The bare ReAct loop: call the model, execute any tool calls, repeat."""
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -11,6 +12,28 @@ PROMPT_PATH = Path(__file__).resolve().parent.parent / "agents" / "kukulkan" / "
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
 
 TOOL_SCHEMAS = [schema for schema, _ in REGISTRY.values()]
+
+# NOTES.md findings 9/11: a no-tool-call response ends the run, but the model
+# sometimes fills that final response with a statement of intent ("I will
+# proceed...") instead of the tool call itself. Both a system-prompt rule and
+# a worked example labeling this exact pattern WRONG produced null results —
+# prompting alone doesn't fix it. This is the harness-level fallback: catch
+# the pattern and force one more turn instead of ending the run on it.
+INTENT_PATTERNS = [
+    re.compile(r"\bI will (now )?(proceed|start|begin|create|write)\b", re.IGNORECASE),
+    re.compile(r"\blet'?s (start|begin|proceed)\b", re.IGNORECASE),
+    re.compile(r"\bproceeding to\b", re.IGNORECASE),
+]
+
+NUDGE_MESSAGE = (
+    "Your previous response ended the task without taking any action — a response "
+    "with no tool calls is final. Either make the tool call(s) now, or state your "
+    "final answer without announcing intent."
+)
+
+
+def _looks_like_intent(content):
+    return any(p.search(content) for p in INTENT_PATTERNS)
 
 
 def _log(log_path, event):
@@ -50,13 +73,14 @@ def _call_tool(name, arguments):
     return str(result), None
 
 
-def run_task(task: str, config) -> str:
-    system_prompt = PROMPT_PATH.read_text()
+def run_task(task: str, config, source="cli", prior_messages: list = None) -> str:
+    max_steps = config.get("max_steps", 10)
+    system_prompt = PROMPT_PATH.read_text() + f"\n\nYou have a budget of {max_steps} steps for this task."
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": task},
-    ]
+    messages = [{"role": "system", "content": system_prompt}]
+    if prior_messages:
+        messages.extend(prior_messages)
+    messages.append({"role": "user", "content": task})
 
     LOG_DIR.mkdir(exist_ok=True)
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -66,10 +90,12 @@ def run_task(task: str, config) -> str:
         "type": "run_start",
         "messages": messages,
         "tool_names": list(REGISTRY),
+        "source": source,
+        "history_len": len(prior_messages) if prior_messages else 0,
     })
 
-    max_steps = config.get("max_steps", 10)
     tool_records = []
+    nudge_used = False
 
     for step in range(1, max_steps + 1):
         prompt_snapshot = list(messages)
@@ -87,6 +113,10 @@ def run_task(task: str, config) -> str:
             and eval_count > 20
         )
 
+        tool_calls = message.get("tool_calls")
+        content = message.get("content", "")
+        is_intent_nudge = not tool_calls and not nudge_used and _looks_like_intent(content)
+
         model_call_entry = {
             "step": step,
             "type": "model_call",
@@ -100,15 +130,19 @@ def run_task(task: str, config) -> str:
             model_call_entry["generation_swallowed"] = True
             print(f"WARNING: model generated {eval_count} tokens but nothing surfaced "
                   "(parser swallow or discarded thinking)")
+        if is_intent_nudge:
+            model_call_entry["intent_nudge"] = True
         _log(log_path, model_call_entry)
 
-        tool_calls = message.get("tool_calls")
         if not tool_calls:
-            content = message.get("content", "")
+            if is_intent_nudge:
+                nudge_used = True
+                messages.append({"role": "system", "content": NUDGE_MESSAGE})
+                print(f"[step {step}] intent nudge issued (declared intent instead of acting)")
+                continue
             print(f"[step {step}] final answer: {content}")
             return content
 
-        content = message.get("content")
         if content:
             print(f"[step {step}] assistant: {content}")
 
@@ -138,6 +172,7 @@ def run_task(task: str, config) -> str:
                 "name": name,
                 "arguments": arguments,
                 "result": tool_content,
+                "result_head": tool_content[:300],
                 "error": error is not None,
             }
             if is_duplicate:

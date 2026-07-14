@@ -1,13 +1,34 @@
 name: batch-15-files
-# NOTES.md finding 4: genuinely needs ~17 steps against a 10-step budget.
-# This case documents the budget-exhaustion behavior rather than requiring
-# success — the abort classifier (harness/loop.py's _abort_stats) should
-# report clean linear progress ("progressing"), not a stuck loop.
+# History:
+# - Original check (Phase 4, NOTES.md finding 4) pinned budget-exhaustion abort
+#   behavior: final_answer_regex: progressing, expecting the abort classifier to
+#   report clean linear progress against a 10-step budget on a ~17-step task.
+# - Findings 9/10 showed the model's actual behavior was an honest decline, not
+#   an abort: "I will proceed" then zero write_file calls (finding 9), then,
+#   after budget injection, a correctly-reasoned refusal quoting real numbers
+#   (finding 10) — matching estimate-before-batch's own worked example.
+# - Finding 11 showed the same "declare intent, don't act" bug also persisted
+#   when proceeding (not declining) was the correct call; findings 8/9/11 were
+#   closed by a harness-level intent-nudge in loop.py — see
+#   batch-15-files-sufficient-budget.yaml, now 5/5 under a sufficient budget.
+# - Re-pinned 2026-07-12 to the honest-decline branch: under this case's
+#   INSUFFICIENT budget (max_steps: 10 against a ~17-step task), declining is
+#   the intended behavior per estimate-before-batch v2's insufficient-budget
+#   worked example — not exhaustion, not partial writing. Checks pin the
+#   decline's behavior (an estimate was made, no files were written, the
+#   shortfall and options were stated), not exact phrasing.
 task: >
   Create 15 files in the workspace named part_01.txt through part_15.txt
   (zero-padded two-digit numbers), each containing the text "part N" where N
   is that file's number.
 max_steps: 10
 checks:
+  - type: completed
+  - type: tool_called
+    name: estimate-before-batch
+  - type: tool_not_called
+    name: write_file
   - type: final_answer_regex
-    pattern: progressing
+    pattern: "(?i)(needs|requires|need)\\s+(approximately|about|~)?\\s*\\d+\\s+steps.*budget"
+  - type: final_answer_regex
+    pattern: "(?i)(raise the budget|increase the budget|complete the first|options)"

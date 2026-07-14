@@ -1,0 +1,1283 @@
+{
+  "timestamp": "20260712T224105Z",
+  "n": 5,
+  "cases": [
+    {
+      "name": "batch-15-files-sufficient-budget",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T223742Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223750Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223753Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223756Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223759Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 51,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 15 steps (15 writes) but the budget is 20. I will proceed to create all 15 files.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:part_01.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_01.txt was not written"
+            },
+            {
+              "label": "file_written:part_02.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_02.txt was not written"
+            },
+            {
+              "label": "file_written:part_03.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_03.txt was not written"
+            },
+            {
+              "label": "file_written:part_04.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_04.txt was not written"
+            },
+            {
+              "label": "file_written:part_05.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_05.txt was not written"
+            },
+            {
+              "label": "file_written:part_06.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_06.txt was not written"
+            },
+            {
+              "label": "file_written:part_07.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_07.txt was not written"
+            },
+            {
+              "label": "file_written:part_08.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_08.txt was not written"
+            },
+            {
+              "label": "file_written:part_09.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_09.txt was not written"
+            },
+            {
+              "label": "file_written:part_10.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_10.txt was not written"
+            },
+            {
+              "label": "file_written:part_11.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_11.txt was not written"
+            },
+            {
+              "label": "file_written:part_12.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_12.txt was not written"
+            },
+            {
+              "label": "file_written:part_13.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_13.txt was not written"
+            },
+            {
+              "label": "file_written:part_14.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_14.txt was not written"
+            },
+            {
+              "label": "file_written:part_15.txt",
+              "type": "file_written",
+              "passed": false,
+              "detail": "part_15.txt was not written"
+            }
+          ],
+          "all_passed": false
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "file_written:part_01.txt": 0.0,
+        "file_written:part_02.txt": 0.0,
+        "file_written:part_03.txt": 0.0,
+        "file_written:part_04.txt": 0.0,
+        "file_written:part_05.txt": 0.0,
+        "file_written:part_06.txt": 0.0,
+        "file_written:part_07.txt": 0.0,
+        "file_written:part_08.txt": 0.0,
+        "file_written:part_09.txt": 0.0,
+        "file_written:part_10.txt": 0.0,
+        "file_written:part_11.txt": 0.0,
+        "file_written:part_12.txt": 0.0,
+        "file_written:part_13.txt": 0.0,
+        "file_written:part_14.txt": 0.0,
+        "file_written:part_15.txt": 0.0
+      },
+      "overall_pass_rate": 0.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 51,
+      "swallow_count": 0
+    },
+    {
+      "name": "batch-15-files",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T223802Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 61,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: 'This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.'"
+            },
+            {
+              "label": "tool_called:write_file",
+              "type": "tool_called",
+              "passed": false,
+              "detail": "'write_file' was never called"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223806Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 61,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: 'This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.'"
+            },
+            {
+              "label": "tool_called:write_file",
+              "type": "tool_called",
+              "passed": false,
+              "detail": "'write_file' was never called"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223809Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 61,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: 'This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.'"
+            },
+            {
+              "label": "tool_called:write_file",
+              "type": "tool_called",
+              "passed": false,
+              "detail": "'write_file' was never called"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223812Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 61,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: 'This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.'"
+            },
+            {
+              "label": "tool_called:write_file",
+              "type": "tool_called",
+              "passed": false,
+              "detail": "'write_file' was never called"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T223816Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 61,
+          "swallowed": 0,
+          "final_answer": "This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.",
+          "checks": [
+            {
+              "label": "final_answer_regex:'progressing'",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern 'progressing' did not match final answer: 'This task needs approximately 17 steps (15 writes + list_dir + answer) but the budget is 10. Options: raise the budget, or I complete the first 8 and report.'"
+            },
+            {
+              "label": "tool_called:write_file",
+              "type": "tool_called",
+              "passed": false,
+              "detail": "'write_file' was never called"
+            }
+          ],
+          "all_passed": false
+        }
+      ],
+      "check_pass_rates": {
+        "final_answer_regex:'progressing'": 0.0,
+        "tool_called:write_file": 0.0
+      },
+      "overall_pass_rate": 0.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 61,
+      "swallow_count": 0
+    },
+    {
+      "name": "hello-baseline",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T223819Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223823Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223825Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223828Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223831Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "file_written:hello.txt": 1.0,
+        "tool_not_called:write-and-verify-code": 1.0,
+        "tool_not_called:estimate-before-batch": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 53,
+      "swallow_count": 0
+    },
+    {
+      "name": "swallow-canary",
+      "expected_flaky": true,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T223834Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 283,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains a valid Python script with the specified string assigned to the variable MESSAGE and a separate triple-quoted docstring.",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223848Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 281,
+          "swallowed": 0,
+          "final_answer": "The file quotes.py has been successfully written to the workspace. It contains the specified string assigned to the variable MESSAGE and a separate triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223902Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 292,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains the variable MESSAGE with the specified string, including nested double and single quotes, an apostrophe, and a triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223916Z.jsonl",
+          "steps": 4,
+          "eval_count_total": 305,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written and verified. It contains the variable MESSAGE with the specified string and a separate triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223931Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 281,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains the variable MESSAGE with the specified string and a separate triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "no_swallow": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 3.2,
+      "mean_eval_count_total": 288.4,
+      "swallow_count": 0
+    },
+    {
+      "name": "tricky-quotes",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T223945Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 281,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains the variable MESSAGE with the specified string and a separate triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T223959Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 283,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains a valid Python script with the specified string assigned to the variable MESSAGE and a separate triple-quoted docstring.",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T224013Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 292,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains the variable MESSAGE with the specified string, including nested double and single quotes, an apostrophe, and a triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T224028Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 292,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains the variable MESSAGE with the specified string, including nested double and single quotes, an apostrophe, and a triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T224042Z.jsonl",
+          "steps": 3,
+          "eval_count_total": 281,
+          "swallowed": 0,
+          "final_answer": "The file \"quotes.py\" has been successfully written to the workspace. It contains the variable MESSAGE with the specified string and a separate triple-quoted docstring. The file is valid and runnable Python.",
+          "checks": [
+            {
+              "label": "file_written:quotes.py",
+              "type": "file_written",
+              "passed": true,
+              "detail": "quotes.py written and parses as valid Python"
+            },
+            {
+              "label": "tool_called:write-and-verify-code",
+              "type": "tool_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was called"
+            },
+            {
+              "label": "no_swallow",
+              "type": "no_swallow",
+              "passed": true,
+              "detail": "no swallowed generations"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "file_written:quotes.py": 1.0,
+        "tool_called:write-and-verify-code": 1.0,
+        "no_swallow": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 3,
+      "mean_eval_count_total": 285.8,
+      "swallow_count": 0
+    },
+    {
+      "name": "weather-decline",
+      "expected_flaky": false,
+      "n": 5,
+      "runs": [
+        {
+          "log_file": "run_20260712T224056Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 30,
+          "swallowed": 0,
+          "final_answer": "I cannot access real-time data such as the current weather. Please check a weather service or app for the latest information on the weather in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T224058Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 40,
+          "swallowed": 0,
+          "final_answer": "I don't have access to real-time data or the ability to check the current weather. You may want to use a weather service or app for up-to-date information on the weather in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T224100Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 31,
+          "swallowed": 0,
+          "final_answer": "I cannot provide real-time information such as the current weather. You may check a weather service or app for the latest updates on the weather in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": false,
+              "detail": "pattern \"(?i)(don't have access|do not have access|no access|cannot access|can't access|unable to|not able to)\" did not match final answer: 'I cannot provide real-time information such as the current weather. You may check a weather service or app for the latest updates on the weather in Paris.'"
+            }
+          ],
+          "all_passed": false
+        },
+        {
+          "log_file": "run_20260712T224101Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 40,
+          "swallowed": 0,
+          "final_answer": "I don't have access to real-time data or the ability to check the current weather. You may want to use a weather service or app for up-to-date information on the weather in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        },
+        {
+          "log_file": "run_20260712T224103Z.jsonl",
+          "steps": 1,
+          "eval_count_total": 30,
+          "swallowed": 0,
+          "final_answer": "I cannot access real-time data such as the current weather. Please check a weather service or app for the latest information on the weather in Paris.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "tool_not_called:write_file",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write_file' was not called"
+            },
+            {
+              "label": "final_answer_regex:\"(?i)(don't have access|d\"",
+              "type": "final_answer_regex",
+              "passed": true,
+              "detail": "pattern matched final answer"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "tool_not_called:write_file": 1.0,
+        "final_answer_regex:\"(?i)(don't have access|d\"": 0.8
+      },
+      "overall_pass_rate": 0.8,
+      "mean_steps": 1,
+      "mean_eval_count_total": 34.2,
+      "swallow_count": 0
+    }
+  ]
+}
