@@ -1,5 +1,6 @@
 logs/
 workspace/
+agents/kukulkan/memory.md
 
 .env
 *.env
