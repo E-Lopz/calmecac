@@ -1,0 +1,57 @@
+{
+  "timestamp": "20260714T235702Z",
+  "n": 1,
+  "cases": [
+    {
+      "name": "hello-baseline",
+      "expected_flaky": false,
+      "n": 1,
+      "runs": [
+        {
+          "log_file": "run_20260714T235654Z.jsonl",
+          "steps": 2,
+          "eval_count_total": 53,
+          "swallowed": 0,
+          "final_answer": "The text \"Hello, world!\" has been successfully written to the file `hello.txt` in the workspace.",
+          "checks": [
+            {
+              "label": "completed",
+              "type": "completed",
+              "passed": true,
+              "detail": "reached a final answer within budget"
+            },
+            {
+              "label": "file_written:hello.txt",
+              "type": "file_written",
+              "passed": true,
+              "detail": "hello.txt written"
+            },
+            {
+              "label": "tool_not_called:write-and-verify-code",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'write-and-verify-code' was not called"
+            },
+            {
+              "label": "tool_not_called:estimate-before-batch",
+              "type": "tool_not_called",
+              "passed": true,
+              "detail": "'estimate-before-batch' was not called"
+            }
+          ],
+          "all_passed": true
+        }
+      ],
+      "check_pass_rates": {
+        "completed": 1.0,
+        "file_written:hello.txt": 1.0,
+        "tool_not_called:write-and-verify-code": 1.0,
+        "tool_not_called:estimate-before-batch": 1.0
+      },
+      "overall_pass_rate": 1.0,
+      "mean_steps": 2,
+      "mean_eval_count_total": 53,
+      "swallow_count": 0
+    }
+  ]
+}
